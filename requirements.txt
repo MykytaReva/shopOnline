@@ -1,0 +1,12 @@
+#django
+Django
+django-extensions
+
+#python
+python-decouple
+
+#flake8
+flake8
+
+#postgresql
+psycopg2

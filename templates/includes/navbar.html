@@ -1,0 +1,23 @@
+<nav class='container bg-primary text-white rounded-pill'>
+    <div class="row mb-2 py-2 px-2">
+        <div class="col-4 text-start">
+            <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store "></i><b>shopOnline</b></a>
+        </div>
+        <div class="col-4 text-center fw-bolder">
+            Marketplace
+        </div>
+        <div class="col-4 text-end pe-2 fw-bolder">
+            {% if not request.user.is_authenticated %}
+            <div class='text-light'>Hello, Visitor!</div>
+            <a  class='text-light' href="{% url 'accounts:login' %}">Login</a>
+            <span>|</span>
+            <a  class='text-light' href="{% url 'accounts:signup' %}">SignUp</a>
+            {% else %}
+            <div class='text-light'>Hello, {{ request.user.first_name }}!</div>
+            <a  class='text-light' href="{% url 'accounts:logout' %}">logout</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+  </nav>
