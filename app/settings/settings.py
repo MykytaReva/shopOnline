@@ -139,3 +139,5 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+CELERY_BROKER_URL = 'amqp://localhost'

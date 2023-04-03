@@ -12,7 +12,7 @@ from django.views.generic import View
 from django.contrib.auth import get_user_model
 
 from .forms import SignUpForm
-from .utils import send_activation_email
+from .tasks import send_activation_email
 
 from shop.models import Shop
 from shop.forms import ShopForm
@@ -144,15 +144,9 @@ class SignUpView(View):
                 self.request,
                 'Account created, check your inbox for the activation email.'
             )
-            mail_subject = 'Please activate your account.'
-            email_template = 'emails/user_activation_email.html'
-            send_activation_email(
-                self.request,
-                user,
-                mail_subject,
-                email_template
-            )
 
+            send_activation_email.delay(user.pk)
+            # send_email_activation.delay(user, mail_subject, email_template)
             return redirect('accounts:login')
         else:
             messages.error(self.request, form.errors)

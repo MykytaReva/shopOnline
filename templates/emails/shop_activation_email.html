@@ -1,0 +1,11 @@
+{% autoescape off %}
+Dear {{ user.username }},
+
+Please click on the link to confirm your User registration,
+http://{{ domain }}{% url 'accounts:activate' uidb64=uid token=token %}
+
+Regarding your shop:
+Our team will review information about your online shop and as soon as we have a decision you will be notified by email.
+It may take up to 5 working days. We greatly appreciate your patience.
+
+{% endautoescape %}

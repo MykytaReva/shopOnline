@@ -18,3 +18,6 @@ shell_plus:
 
 show_urls:
 	python app/manage.py show_urls
+
+celery:
+	cd app && celery -A settings worker --loglevel=INFO

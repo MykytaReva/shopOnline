@@ -1,12 +1,15 @@
 #django
-Django
-django-extensions
+Django==4.1.7
+django-extensions==3.2.1
 
 #python
 python-decouple
 
 #flake8
-flake8
+flake8==6.0.0
 
 #postgresql
-psycopg2
+psycopg2==2.9.5
+
+#celery
+celery==5.2.7
