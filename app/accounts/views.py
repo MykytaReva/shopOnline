@@ -1,52 +1,66 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages, auth
-from django.views.generic import View, CreateView
-from django.http import HttpResponseRedirect, HttpResponse
 from django.template.defaultfilters import slugify
 
-from .models import User
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+
+from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import View
+
+from django.contrib.auth import get_user_model
+
 from .forms import SignUpForm
+from .utils import send_activation_email
 
 from shop.models import Shop
-# from shop.forms import ShopForm
+from shop.forms import ShopForm
 
 
-class SignInView(View):
-    # Login View
-    def get(self, request):
-        return render(request, 'accounts/login.html')
+class SignInView(LoginView):
+    success_url = reverse_lazy('marketplace:home_view')
+    template_name = 'accounts/login.html'
 
-    def post(self, request):
-        # check if user already logged in or not
-        if request.user.is_authenticated:
-            messages.error(request, 'You are already logged in!')
-            return redirect('marketplace:home_view')
-        # get credentials for login
-        email = request.POST['email']
-        password = request.POST['password']
+    def form_valid(self, email, password):
+        """Security check complete. Log the user in."""
+        if get_user_model().objects.filter(email=email).exists():
+            user = auth.authenticate(email=email, password=password)
+            return user
 
-        user = auth.authenticate(email=email, password=password)
-
+    def post(self, request, *args, **kwargs):
+        super().post(self.request, *args, **kwargs)
+        email = self.request.POST['email']
+        password = self.request.POST['password']
+        user = self.form_valid(email, password)
+        print(user)
+        # check if account exists:
+        if not get_user_model().objects.filter(email=email).exists():
+            messages.error(
+                self.request,
+                'Acount with this email address does not exists.'
+            )
+            return redirect('accounts:login')
         if user is not None:
             if user.is_active:
-                auth.login(request, user)
-                messages.success(request, 'You are logged in.')
-                return HttpResponseRedirect(
-                    reverse_lazy('marketplace:home_view')
-                )
+                auth.login(self.request, user)
+                messages.success(self.request, 'You are logged in!)')
+                return redirect('marketplace:home_view')
             else:
-                messages.error(request, 'You are logged in.')
-                return HttpResponse("Inactive user.")
-
+                messages.error(
+                    self.request,
+                    'Activate your account by email first'
+                )
+                return redirect('accounts:login')
         else:
-            return HttpResponseRedirect(reverse_lazy('marketplace:home_view'))
+            messages.error(self.request, 'Incorrect password.')
+            return redirect('accounts:login')
+        return redirect('accounts:login')
 
-        return render(request, 'accounts/login.html')
 
+class LogoutView(LogoutView):
+    template_name = reverse_lazy('marketplace:home_view')
 
-class LogoutView(View):
-    # Logour View
     def get(self, request):
         # check if user logged in
         if not request.user.is_authenticated:
@@ -56,17 +70,24 @@ class LogoutView(View):
         auth.logout(request)
         messages.success(request, 'You are logged out')
 
-        return HttpResponseRedirect(reverse_lazy('marketplace:home_view'))
+        return redirect(reverse_lazy('marketplace:home_view'))
 
 
-class SignUpView(CreateView):
-    template_name = 'accounts/signup.html'
-    success_url = reverse_lazy('accounts:login')
-    success_message = "Your profile was created successfully"
+class SignUpView(View):
+
+    def get(self, request, *args, **kwargs):
+        form = SignUpForm()
+        s_form = ShopForm()
+        context = {
+            'form': form,
+            's_form': s_form
+        }
+
+        return render(self.request, 'accounts/signup.html', context)
 
     def post(self, *args, **kwargs):
         form = SignUpForm(self.request.POST)
-        # s_form = ShopForm(self.request.POST, request.FILES)
+        s_form = ShopForm(self.request.POST, self.request.FILES)
         if form.is_valid():
             # get credentials for user
             first_name = form.cleaned_data['first_name']
@@ -76,12 +97,12 @@ class SignUpView(CreateView):
             password = form.cleaned_data['password1']
             # Role
             role = self.request.POST['inlineRadioOptions']
-            print(self.request.POST)
+            form.cleaned_data['role'] = role
+
             # check if user or shop
             if role == 'thisuser':
                 # create user
-
-                user = User.objects.create_user(
+                user = get_user_model().objects.create_user(
                     email=email,
                     first_name=first_name,
                     last_name=last_name,
@@ -90,42 +111,87 @@ class SignUpView(CreateView):
                     role=1
                 )
             elif role == 'thisshop':
-                # get credentials for Shop
-                shop_name = self.request.POST['shop_name']
-                docs = self.request.POST['docs']
-                slug = slugify(shop_name)
+                if s_form.is_valid():
+                    # get credentials for Shop
+                    shop_name = s_form.cleaned_data['shop_name']
+                    docs = s_form.cleaned_data['docs']
+                    slug = slugify(shop_name)
 
-                user = User.objects.create_user(
-                    email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    username=username,
-                    password=password,
-                    role=2,
-                )
-                print(user.user_profile)
-                shop = Shop.objects.create(
-                    user=user,
-                    user_profile=user.user_profile,
-                    docs=docs,
-                    slug=slug
-                )
+                    user = get_user_model().objects.create_user(
+                        email=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        username=username,
+                        password=password,
+                        role=2,
+                    )
 
-            # send activation email
-            # mail_subject = 'Please activate your account.'
-            # email_template =
-            # 'accounts/emails/account_verification_email.html'
-            # send_verification_email(
-            # request, user, mail_subject, email_template
-            # )
+                    shop = Shop.objects.create(
+                        user=user,
+                        user_profile=user.userprofile,
+                        shop_name=shop_name,
+                        docs=docs,
+                        slug=slug
+                    )
+                else:
+                    # messages.error(self.request, s_form.errors)
+                    messages.error(self.request, form.errors)
+                    print(form.errors)
+                    form = SignUpForm()
+                    s_form = ShopForm()
+
             messages.success(
                 self.request,
                 'Account created, check your inbox for the activation email.'
+            )
+            mail_subject = 'Please activate your account.'
+            email_template = 'emails/user_activation_email.html'
+            send_activation_email(
+                self.request,
+                user,
+                mail_subject,
+                email_template
             )
 
             return redirect('accounts:login')
         else:
             messages.error(self.request, form.errors)
-            form = SignUpForm()
+            messages.error(self.request, s_form.errors)
 
-            return redirect('accounts:signup')
+            form = SignUpForm()
+            s_form = ShopForm()
+        context = {
+            'form': form,
+            's_form': s_form,
+        }
+        return render(self.request, 'accounts/signup.html', context)
+
+
+class ActivationView(View):
+    def get(self, request, uidb64, token):
+        # Activate the user by setting the is_active to the True
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            get_user_model().DoesNotExist
+        ):
+            user = None
+
+        if user is not None \
+                and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(
+                request,
+                'Congratulations! Your account is activated.'
+            )
+            return redirect('marketplace:home_view')
+        else:
+            messages.error(request, 'Invalid activation link.')
+            return redirect('marketplace:home_view')
+
+        return redirect('accounts:login')

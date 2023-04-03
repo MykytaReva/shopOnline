@@ -5,14 +5,21 @@
     100% {bottom: -100%}
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1 1 auto;
+}
 
 .show-notification{
     position: fixed;
     bottom: 100%;
     right: 20px;
     animation-name: show-toast;
-    animation-duration: 6s;
+    animation-duration: 10s;
     z-index: 99;
 }
-
 

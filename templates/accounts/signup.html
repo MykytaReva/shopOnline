@@ -3,12 +3,12 @@
 
 {% block content %}
 
-<section class="vh-100 gradient-custom">
-    <div class="container py-5 h-100">
+<section class="gradient-custom">
+    <div class="container pb-1">
       <div class="row justify-content-center mt-3 h-100">
         <div class="col-12 col-lg-9 col-xl-7">
           <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
-            <div class="card-body p-4 p-md-5">
+            <div class="card-body">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 text-center">Registration Form</h3>
               <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -86,23 +86,24 @@
 
                       <div class="form-check form-check-inline">
                         <input onclick="checkRole(this.value)" class="form-check-input" type="radio" name="inlineRadioOptions" id="useruser"
-                      value="thisuser" />
+                      value="thisuser" required/>
                     <label class="form-check-label" for="useruser">User</label>
                   </div>
 
                   <div class="form-check form-check-inline">
                     <input onclick="checkRole(this.value)" class="form-check-input" type="radio" name="inlineRadioOptions" id="shopshop"
-                      value="thisshop" />
+                      value="thisshop" required/>
                     <label class="form-check-label" for="shopshop">Shop</label>
                       </div>
 
                     </div>
                   </div>
+
                 <!-- Condititonal elements start-->
                 <div class="row" id='thisshop' style="display:none;">
-                  <div class="text-center mt-4"><strong>Shop's information</strong></div>
-                  <div class="row mt-4">
-                    <div class="col-md-6 mb-2 pb-2">
+                  <div class="text-center mt-4 mb-2 fw-bolder">Shop's information</div>
+                  <div class="row">
+                    <div class="col-md-6 mb-4">
 
                       <div class="form-outline">
 
@@ -110,6 +111,7 @@
 
                       <label class="form-label" for="shopName">Shop's name</label>
                     </div>
+                  </div>
                     <div class="col-md-6 mb-2 pb-2">
                       <div class="form-outline">
 
@@ -122,15 +124,33 @@
                   </div>
                 <!-- Condititonal elements end-->
                 </div>
+              </div>
+              
                 <div class="row text-center mb-4">
                     <div class="mt-2 pt-2">
                         <input class="btn btn-primary btn-lg" type="submit" value="Submit" />
-                      </div>
+                    </div>
                 </div>
 
 
 
               </form>
+              {% comment %} {% for field in form%}
+                  {% if field.errors %}
+                      {% for error in field.errors %}
+                          <li style='color: red;'>{{error}}</li>
+                      {% endfor %}
+                  {% endif%}
+              {% endfor %} {% endcomment %}
+              {% if messages %}
+              <div class="span12">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message|safe }}
+                    </div>
+                {% endfor %}
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>
