@@ -1,30 +1,32 @@
-from django.shortcuts import redirect
-from django.contrib import messages
+from django.http import JsonResponse
 
 from .forms import DailyLetterForm
 from .models import DailyLetter
 
 
 def daily_newsletter_form(request):
-    # if get method - render the form
-    d_form = DailyLetterForm()
-    context = {
-        'd_form': d_form,
-    }
-    # if post method - save obj
-    if request.method == 'POST':
+    # check if request is ajax
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         d_form = DailyLetterForm(request.POST)
+        # check form
         if d_form.is_valid():
-            # get credentials for user
             email = d_form.cleaned_data['email']
             DailyLetter.objects.create(email=email)
-            messages.success(
-                request,
-                'You successfully signed up for our newsletter!'
-            )
-            return redirect('marketplace:home_view')
+            return JsonResponse({
+                'message': 'You successfully signed up for our newsletter!',
+                'icon': 'success',
+                })
+        # unique error
         else:
-            messages.error(request, d_form.errors)
-            d_form = DailyLetterForm()
-            return redirect('marketplace:home_view')
-    return context
+            return JsonResponse({
+                'message':
+                'This email address already signed up for the newsletter.',
+                'icon': 'error',
+                })
+    # standard context_processor
+    else:
+        d_form = DailyLetterForm()
+        context = {
+            'd_form': d_form,
+        }
+        return context

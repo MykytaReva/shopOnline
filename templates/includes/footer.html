@@ -3,7 +3,7 @@
   <div class="container p-4 pb-0">
     <!-- Section: Form -->
     <section class="">
-      <form id='newsletter-form'action="{% url 'accounts:newsletter' %}" autocomplete="off" method='post'>
+      <form id='newsletter-form'  autocomplete="off" >
         {% csrf_token %}
         <!--Grid row-->
         <div class="row d-flex justify-content-center">
@@ -21,7 +21,7 @@
             <div class="form-outline mb-4">
               {% comment %} <input type="email" name="daily-email" maxlength="100" required id="daily-email-id" class="form-control"> {% endcomment %}
               {{d_form.email}}
-  
+
               <label class="form-label" for="daily-email">Email address</label>
             </div>
           </div>
@@ -30,7 +30,7 @@
           <!--Grid column-->
           <div class="col-auto">
             <!-- Submit button -->
-            <button type="submit" class="btn btn-primary mb-4">
+            <button type='submit' class="btn btn-primary mb-4" id="report-btn">
               Subscribe
             </button>
           </div>
@@ -50,3 +50,43 @@
   </div>
   <!-- Copyright -->
 </footer>
+<script>
+  $(document).ready(function() {
+      // submit form data using AJAX
+      $('#newsletter-form').on('submit', function(event) {
+          event.preventDefault();
+
+          // disable submit button
+          $('#report-btn').attr('disabled', true);
+
+          // send AJAX request
+          $.ajax({
+              url: '{% url 'accounts:newsletter' %}',
+              type: 'POST',
+              data: $(this).serialize(),
+              success: function(response) {
+                  // enable submit button
+
+                  $('#report-btn').attr('disabled', false);
+
+                  // clear email input field
+                  $('#daily-email-id').val('');
+
+                  // show success/error message
+                  console.log('12121212')
+                  console.log(response)
+                  Swal.fire({
+                    icon: response.icon,
+                    title: response.message,
+
+                  })
+              },
+              error: function(xhr, status, error) {
+                  // enable submit button
+                  $('#report-btn').attr('disabled', false);
+
+              }
+          });
+      });
+  });
+  </script>
