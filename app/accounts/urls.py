@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from .context_processors import daily_newsletter_form
 app_name = 'accounts'
 
 
@@ -14,4 +14,6 @@ urlpatterns = [
         views.ActivationView.as_view(),
         name='activate'
       ),
+    path('newsletter/', daily_newsletter_form, name='newsletter'),
+
 ]

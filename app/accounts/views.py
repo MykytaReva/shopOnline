@@ -14,6 +14,7 @@ from django.contrib.auth import get_user_model
 from .forms import SignUpForm
 from .tasks import send_activation_email
 
+
 from shop.models import Shop
 from shop.forms import ShopForm
 
@@ -76,28 +77,28 @@ class LogoutView(LogoutView):
 class SignUpView(View):
 
     def get(self, request, *args, **kwargs):
-        form = SignUpForm()
+        u_form = SignUpForm()
         s_form = ShopForm()
         context = {
-            'form': form,
+            'u_form': u_form,
             's_form': s_form
         }
 
         return render(self.request, 'accounts/signup.html', context)
 
-    def post(self, *args, **kwargs):
-        form = SignUpForm(self.request.POST)
+    def post(self, request, *args, **kwargs):
+        u_form = SignUpForm(self.request.POST)
         s_form = ShopForm(self.request.POST, self.request.FILES)
-        if form.is_valid():
+        if u_form.is_valid():
             # get credentials for user
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password1']
+            first_name = u_form.cleaned_data['first_name']
+            last_name = u_form.cleaned_data['last_name']
+            username = u_form.cleaned_data['username']
+            email = u_form.cleaned_data['email']
+            password = u_form.cleaned_data['password1']
             # Role
             role = self.request.POST['inlineRadioOptions']
-            form.cleaned_data['role'] = role
+            u_form.cleaned_data['role'] = role
 
             # check if user or shop
             if role == 'thisuser':
@@ -135,27 +136,25 @@ class SignUpView(View):
                     )
                 else:
                     # messages.error(self.request, s_form.errors)
-                    messages.error(self.request, form.errors)
-                    print(form.errors)
-                    form = SignUpForm()
+                    messages.error(self.request, u_form.errors)
+                    u_form = SignUpForm()
                     s_form = ShopForm()
 
             messages.success(
                 self.request,
                 'Account created, check your inbox for the activation email.'
             )
-
+            # send email through celery passing userPk
             send_activation_email.delay(user.pk)
-            # send_email_activation.delay(user, mail_subject, email_template)
             return redirect('accounts:login')
         else:
-            messages.error(self.request, form.errors)
+            messages.error(self.request, u_form.errors)
             messages.error(self.request, s_form.errors)
 
-            form = SignUpForm()
+            u_form = SignUpForm()
             s_form = ShopForm()
         context = {
-            'form': form,
+            'u_form': u_form,
             's_form': s_form,
         }
         return render(self.request, 'accounts/signup.html', context)

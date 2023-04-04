@@ -108,3 +108,12 @@ class UserProfile(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+
+
+class DailyLetter(models.Model):
+    email = models.EmailField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.email.split("@")[0]

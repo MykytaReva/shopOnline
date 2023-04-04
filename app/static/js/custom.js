@@ -1,5 +1,5 @@
-    document.getElementById("id_shop_name").required = false;
-    document.getElementById("id_docs").required = false;
+   // document.getElementById("id_shop_name").required = false;
+   // document.getElementById("id_docs").required = false;
 function checkRole(answer) {
 
   console.log(answer)

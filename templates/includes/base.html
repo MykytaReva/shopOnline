@@ -35,6 +35,12 @@
 <script>
     var myAlert = document.getElementById('myAlert')
     var bsAlert = new bootstrap.Alert(myAlert)
+    $('newsletter-form').disableAutoFill({emailFiled: '.email'});
+    let tagArr = document.getElementsByTagName("input");
+     for (let i = 0; i < tagArr.length; i++) {
+        tagArr[i].autocomplete = 'off';
+      }
+
 </script>
 </body>
 </html>

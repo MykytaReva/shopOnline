@@ -21,3 +21,6 @@ show_urls:
 
 celery:
 	cd app && celery -A settings worker --loglevel=INFO
+
+celery_beat:
+	cd app && celery -A settings beat --loglevel=INFO

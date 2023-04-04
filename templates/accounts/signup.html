@@ -10,14 +10,14 @@
           <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
             <div class="card-body">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 text-center">Registration Form</h3>
-              <form method="post" enctype="multipart/form-data">
+              <form id='sign-up-form' method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                   <div class="row">
                   <div class="col-md-6 mb-4 pb-2">
 
                     <div class="form-outline">
 
-                        {{form.email}}
+                        {{u_form.email}}
 
                       <label class="form-label" for="email">Email</label>
                     </div>
@@ -27,7 +27,7 @@
 
                     <div class="form-outline">
 
-                        {{form.username}}
+                        {{u_form.username}}
                       <label class="form-label" for="username">Username</label>
                     </div>
 
@@ -38,7 +38,7 @@
 
                       <div class="form-outline">
 
-                          {{form.first_name}}
+                          {{u_form.first_name}}
 
                         <label class="form-label" for="first_name">First Name</label>
                       </div>
@@ -48,7 +48,7 @@
 
                       <div class="form-outline">
 
-                          {{form.last_name}}
+                          {{u_form.last_name}}
 
                         <label class="form-label" for="last_name">Last Name</label>
                       </div>
@@ -60,7 +60,7 @@
 
                       <div class="form-outline">
 
-                          {{form.password1}}
+                          {{u_form.password1}}
 
                         <label class="form-label" for="firstName">Password</label>
                       </div>
@@ -70,7 +70,7 @@
 
                       <div class="form-outline">
 
-                          {{form.password2}}
+                          {{u_form.password2}}
 
                         <label class="form-label" for="lastName">Confirm Password</label>
                       </div>
@@ -125,7 +125,7 @@
                 <!-- Condititonal elements end-->
                 </div>
               </div>
-              
+
                 <div class="row text-center mb-4">
                     <div class="mt-2 pt-2">
                         <input class="btn btn-primary btn-lg" type="submit" value="Submit" />

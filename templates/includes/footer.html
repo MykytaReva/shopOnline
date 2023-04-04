@@ -3,7 +3,8 @@
   <div class="container p-4 pb-0">
     <!-- Section: Form -->
     <section class="">
-      <form action="">
+      <form id='newsletter-form'action="{% url 'accounts:newsletter' %}" autocomplete="off" method='post'>
+        {% csrf_token %}
         <!--Grid row-->
         <div class="row d-flex justify-content-center">
           <!--Grid column-->
@@ -18,8 +19,10 @@
           <div class="col-md-5 col-12">
             <!-- Email input -->
             <div class="form-outline mb-4">
-              <input type="email" id="form5Example27" class="form-control" />
-              <label class="form-label" for="form5Example27">Email address</label>
+              {% comment %} <input type="email" name="daily-email" maxlength="100" required id="daily-email-id" class="form-control"> {% endcomment %}
+              {{d_form.email}}
+  
+              <label class="form-label" for="daily-email">Email address</label>
             </div>
           </div>
           <!--Grid column-->

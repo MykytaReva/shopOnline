@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from decouple import config
 from django.contrib.messages import constants as messages
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # additional django
     'django_extensions',
+    'django_celery_beat',
 
     # apps
     'accounts',
@@ -45,7 +49,7 @@ ROOT_URLCONF = 'settings.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [ os.path.join(BASE_DIR.parent, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -53,6 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.daily_newsletter_form',
             ],
         },
     },
@@ -141,3 +146,10 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_TIMEZONE = 'Europe/Warsaw'
+CELERY_BEAT_SCHEDULE = {
+    'printer': {
+        'task': 'accounts.tasks.print_every_2sec',
+        'schedule': crontab(minute='*/1')
+    },
+}
