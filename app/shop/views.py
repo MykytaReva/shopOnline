@@ -120,6 +120,11 @@ class ItemDetailView(LoginRequiredMixin, generic.DetailView):
     queryset = Item.objects.all()
     template_name = 'shop/item/item_details.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["shop"] = self.request.user.shop
+        return context
+
 
 class ItemCreateView(LoginRequiredMixin, FormView):
     form_class = ItemForm
@@ -256,5 +261,5 @@ class ItemDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, 'Category has been deleted.')
+        messages.success(self.request, 'Item has been deleted.')
         return response
