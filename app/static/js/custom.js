@@ -1,23 +1,36 @@
 let autocomplete;
 
 
-// document.getElementById("id_shop_name").required = false;
-   // document.getElementById("id_docs").required = false;
-function checkRole(answer) {
 
-  console.log(answer)
-  if (answer == "thisshop") { // hide the div that is not selected
 
-    document.getElementById('thisshop').style.display = "block";
-    // document.getElementById("id_shop_name").required = true;
-    // document.getElementById("id_docs").required = true;
-  } else{
-
-    document.getElementById('thisshop').style.display = "none";
-
+function checkRole(role) {
+  if (role == 'thisshop') {
+    document.getElementById('thisshop').style.display = 'block';
+    document.getElementById('id_shop_name').required = true;
+    document.getElementById('id_docs').required = true;
+  } else {
+    document.getElementById('thisshop').style.display = 'none';
+    document.getElementById('id_shop_name').required = false;
+    document.getElementById('id_docs').required = false;
   }
-
 }
+
+// function checkRole(answer) {
+
+
+//   if (answer == "thisuser") { // hide the div that is not selected
+
+//     document.getElementById('thisshop').style.display = "block";
+//     document.getElementById("id_shop_name").required = false;
+//     document.getElementById("id_docs").required = false;
+
+//   } else{
+
+//     document.getElementById('thisshop').style.display = "none";
+
+//   }
+
+// }
 
 $(document).ready(function() {
   // submit form data using AJAX
@@ -29,7 +42,7 @@ $(document).ready(function() {
 
     // send AJAX request
     $.ajax({
-      url: '/accounts/newsletter/', // replace with actual URL path
+      url: '/accounts/newsletter/',
       type: 'POST',
       data: $(this).serialize(),
       success: function(response) {
@@ -52,3 +65,25 @@ $(document).ready(function() {
     });
   });
 });
+
+
+$(document).ready(function() {
+  $('.model-button').on('click', function(e) {
+    e.preventDefault();
+    var form = $(this).closest('form');
+    $('#deleteModal').modal('show');
+    $('#deleteModal').find('.modal-footer #confirm-delete').on('click', function() {
+      form.submit();
+    });
+
+  });
+  $('.close-but').on('click', function (e) {
+    e.preventDefault();
+    var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+      keyboard: false
+  })
+    e.preventDefault();
+    myModal.hide();
+  });
+});
+

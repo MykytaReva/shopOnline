@@ -1,0 +1,66 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+    <div class="container-fluid">
+        <div class="row">
+        {% include 'includes/shop_sidebar.html' %}
+        <div class="col-md-9 text-center">
+            <!-- Page Content -->
+            <h1>Welcome to the Admin Dashboard</h1>
+            <hr>
+            <div class="container">
+              <a href="{% url 'shop:create_category' %}">Create Category</a>
+              <a href="{% url 'shop:list_category' %}">List Category</a>
+              {% comment %} <a href="{% url 'shop:update_category' %}">Update Category</a> {% endcomment %}
+              <a href="">Delete Category</a>
+
+            </div>
+
+            <p>This is the main content of the admin dashboard.</p>
+        </div>
+        </div>
+        <div class="row mt-2 justify-content-end">
+            <div class="col-9 text-center fw-bolder">
+                <hr>
+                <h3>Most popular items</h3>
+            </div>
+
+        </div>
+        <div class="row mt-3 justify-content-end">
+            <div class="col-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="" class="img-thumbnail" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Card title</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="" class="img-thumbnail" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Card title</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3">
+                <div class="card" style="width: 18rem;">
+                    <img src="" class="img-thumbnail" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Card title</h5>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                  </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

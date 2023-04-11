@@ -34,7 +34,7 @@ class SignInView(LoginView):
         email = self.request.POST['email']
         password = self.request.POST['password']
         user = self.form_valid(email, password)
-        print(user)
+
         # check if account exists:
         if not get_user_model().objects.filter(email=email).exists():
             messages.error(
@@ -75,7 +75,6 @@ class LogoutView(LogoutView):
 
 
 class SignUpView(View):
-
     def get(self, request, *args, **kwargs):
         u_form = SignUpForm()
         s_form = ShopForm()

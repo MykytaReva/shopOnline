@@ -6,6 +6,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 
+from .models import DailyLetter
+
 
 @shared_task
 def send_activation_email(user_pk):
@@ -36,3 +38,21 @@ def send_activation_email(user_pk):
 @shared_task
 def print_every_2sec():
     print('NEXT PRINT WILL BE IN 1 minute')
+
+
+@shared_task
+def send_daily_newsletter():
+    # Get queryset of email addresses from the model
+    receivers = DailyLetter.objects.all()
+
+    # Extract the email addresses from queryset
+    to_emails = list(receivers.values_list('email', flat=True))
+
+    # Compose email message
+    subject = 'Daily Newsletter'
+    body = 'Hello,\n\nHere is your daily newsletter.'
+
+    message = EmailMessage(subject, body, to=to_emails)
+    message.content_subtype = 'html'
+
+    message.send()

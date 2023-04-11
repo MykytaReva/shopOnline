@@ -1,0 +1,96 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class='container mt-4'>
+    <div class="container-fluid">
+        <div class="row">
+        {% include 'includes/shop_sidebar.html' %}
+            <div class="col-md-9 text-center">
+                <!-- Page Content -->
+                {% if  items %}
+                <h1>View all items here!</h1>
+                <div class="row justify-content-center mb-3">
+                    <div class="col-5 text-center">
+                        <a class="btn btn-info" href="{% url 'shop:create_item' %}">Create a new item</a>
+                    </div>
+                </div>
+                <div class="card">
+
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Approved</th>
+                                <th scope="col" colspan="3">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <th scope="col">{{ forloop.counter }}</th>
+                                    <th scope="col">{{ item.name }}</th>
+                                    <th scope="col">{{ item.category.name }}</th>
+                                    <th scope="col">${{ item.price }}</th>
+                                    <th scope="col">
+                                        {% if item.is_approved %}
+                                            <i class="fa-solid fa-check" style="color: #045bf1;"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-xmark" style="color: #f50a0a;"></i>
+                                        {% endif %}
+                                    </th>
+                                    <th scope="col"><a href="{% url 'shop:detail_item' item.slug %}" class="btn btn-outline-success">View</a></th>
+                                    <th scope="col"><a href="{% url 'shop:update_item' item.slug %}" class="btn btn-outline-warning">Edit</a></th>
+                                    <th>
+                                        <button type="button" class="btn btn-outline-danger model-button">Delete</button>
+                                        <!-- Modal -->
+                                        <div class="modal fade" tabindex="-1" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete this Category?
+                                                </div>
+                                                <div class="modal-footer justify-content-center">
+                                                    <form action="{% url 'shop:delete_item' item.slug %}" method="POST">
+                                                        {% csrf_token %}
+                                                        <div class="container-fluid">
+                                                        <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                </div>
+                {% else %}
+
+                    <div class="row justify-content-center mt-3 mb-3">
+                        <h1>You do not have any items for now.</h1>
+                        <div class="col-5 text-center mt-3">
+                            <a class="btn btn-info btn-lg" href="{% url 'shop:create_item' %}">Create a new item</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

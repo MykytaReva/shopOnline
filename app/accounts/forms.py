@@ -45,4 +45,5 @@ class DailyLetterForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update({
             'id': 'daily-email-id',
             'name': 'daily-email',
+            'class': 'form-control form-control-lg',
             })

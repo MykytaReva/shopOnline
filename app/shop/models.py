@@ -6,16 +6,20 @@ def shop_docs(instance, filename):
     return 'docs/{0}/{1}'.format(instance.user.id, filename)
 
 
+def item_photo(instance, filename):
+    return 'item_photo/{0}/{1}'.format(instance.item.id, filename)
+
+
 class Shop(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name='user'
+        related_name='shop'
     )
     user_profile = models.OneToOneField(
         UserProfile,
         on_delete=models.CASCADE,
-        related_name='userprofile'
+        related_name='shop'
     )
     shop_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
@@ -26,3 +30,70 @@ class Shop(models.Model):
 
     def __str__(self):
         return self.shop_name
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    shop = models.ForeignKey(
+        Shop,
+        on_delete=models.CASCADE,
+        related_name='categories',
+        null=True
+        )
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
+    def clean(self):
+        self.name = self.name.capitalize()
+
+    def __str__(self):
+        return self.name
+
+
+class Item(models.Model):
+    name = models.CharField(max_length=55)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='items',
+        null=True
+        )
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    shop = models.ForeignKey(
+        Shop,
+        on_delete=models.CASCADE,
+        related_name='items',
+        null=True,
+        )
+    slug = models.SlugField(unique=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    is_approved = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class ItemImage(models.Model):
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+        related_name='itemimage',
+        null=True
+    )
+    image = models.ImageField(upload_to=item_photo)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.item.title} - {self.item.id}"
+
+    class Meta:
+        get_latest_by = 'created_at'

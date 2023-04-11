@@ -152,4 +152,8 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'accounts.tasks.print_every_2sec',
         'schedule': crontab(minute='*/1')
     },
+    'send_daily_newsletter': {
+        'task': 'accounts.tasks.send_daily_newsletter',
+        'schedule': crontab(hour=10, minute=0),  # runs every day at 8am
+    },
 }

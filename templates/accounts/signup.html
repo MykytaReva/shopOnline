@@ -10,7 +10,7 @@
           <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
             <div class="card-body">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 text-center">Registration Form</h3>
-              <form id='sign-up-form' method="post" enctype="multipart/form-data">
+              <form id='sign-up-form'  onsubmit="return validateForm()" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                   <div class="row">
                   <div class="col-md-6 mb-4 pb-2">
@@ -128,29 +128,13 @@
 
                 <div class="row text-center mb-4">
                     <div class="mt-2 pt-2">
-                        <input class="btn btn-primary btn-lg" type="submit" value="Submit" />
+                        <button id='subButton' class="btn btn-primary btn-lg" type="submit">Login</button>
                     </div>
                 </div>
 
 
 
               </form>
-              {% comment %} {% for field in form%}
-                  {% if field.errors %}
-                      {% for error in field.errors %}
-                          <li style='color: red;'>{{error}}</li>
-                      {% endfor %}
-                  {% endif%}
-              {% endfor %} {% endcomment %}
-              {% if messages %}
-              <div class="span12">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message|safe }}
-                    </div>
-                {% endfor %}
-              </div>
-              {% endif %}
             </div>
           </div>
         </div>
