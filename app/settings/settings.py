@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'debug_toolbar',
     'cities_light',
+    'ajax_select',
 
     # apps
     'accounts',
@@ -72,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.daily_newsletter_form',
+                'accounts.context_processors.get_google_api',
             ],
         },
     },
@@ -169,7 +171,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = "accounts.User"
 
-
 # email config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
@@ -188,3 +189,6 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=10, minute=0),  # runs every day at 8am
     },
 }
+
+# location
+GOOGLE_API_KEY = config('GOOGLE_API_KEY')

@@ -40,9 +40,8 @@
                             </div>
                             <div class="col-md-6 mb-4 pb-2">
                                 <div class="form-outline">
-                                    <label class="form-label" for='country  '>Country</label>
-                                    {{form.country}}
-
+                                    <label class="form-label" for='pin_code'>Date of Birth</label>
+                                    {{form.dob}}
                                 </div>
                             </div>
                         </div>
@@ -51,13 +50,13 @@
                             <div class="col-md-6 mb-4 pb-2">
                                 <div class="form-outline">
                                     <label class="form-label" for='profile_picture'>Profile Picture</label>
-                                    <input type="file" name="profile_picture" accept="image/*" class="form-control form-control-lg" id="id_profile_picture">
+                                    <input id='profile_picture_id' type="file" name="profile_picture" accept="image/*" class="form-control form-control-lg" id="id_profile_picture">
                                 </div>
                             </div>
 
                             <div class="col-md-6 mb-4 pb-2">
                                 <div class="form-outline">
-                                    <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" alt="nema" class='img-thumbnail'>
+                                    <img id='blah' src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" alt="nema" class='img-thumbnail'>
                                 </div>
 
                             </div>
@@ -94,13 +93,14 @@
                             </div>
                             <div class="col-md-6 mb-4 pb-2">
                                 <div class="form-outline">
-                                    <label class="form-label" for='pin_code'>Date of Birth</label>
-                                    {{form.dob}}
+                                    <label class="form-label" for='country  '>Country</label>
+                                    {{form.country}}
+
                                 </div>
                             </div>
                         </div>
 
-                        <button type="reset" class="btn btn-dark btn-lg btn-block">Reset</button>
+                        <button id='resButton' type="reset" class="btn btn-dark btn-lg btn-block">Reset</button>
                         <button id='createButton' type='submit' class="btn btn-primary btn-lg btn-block">Create</button>
                         </form>
                     </div>
@@ -113,4 +113,27 @@
         </div>
     </div>
 </div>
+<script>
+    // Get the relevant elements
+    const id_image = document.querySelector('#profile_picture_id');
+    const resButton = document.querySelector('#resButton');
+    const previewImage = document.querySelector('#blah');
+    let originalImage = previewImage.src;
+
+    // Update the preview image when a file is selected
+    id_image.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        previewImage.src = URL.createObjectURL(file);
+      }
+    });
+
+    // Reset the form when the reset button is clicked
+    resButton.addEventListener('click', function(event) {
+      // Reset the image preview to the original image
+      previewImage.src = originalImage;
+      // Clear the file input field
+      id_image.value = '';
+    });
+  </script>
 {% endblock content %}

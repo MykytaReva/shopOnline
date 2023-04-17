@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.conf import settings
 
 from .forms import DailyLetterForm
 from .models import DailyLetter
@@ -30,3 +31,7 @@ def daily_newsletter_form(request):
             'd_form': d_form,
         }
         return context
+
+
+def get_google_api(request):
+    return {'GOOGLE_API_KEY': settings.GOOGLE_API_KEY}

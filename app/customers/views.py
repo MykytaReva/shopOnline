@@ -1,15 +1,17 @@
-# from django.shortcuts import render
+from django.shortcuts import render
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 from accounts.models import UserProfile
 
 from .forms import UserForm, UserProfileForm
 
 from django.core.cache import cache
+from django.contrib.auth.views import PasswordChangeView
 
 
 class CustomerPanelView(LoginRequiredMixin, generic.TemplateView):
@@ -32,7 +34,7 @@ class CustomerProfileView(LoginRequiredMixin, generic.UpdateView):
             # if not, retrieve it from the database and store it in the cache
             user_profile = super().get_object(
                 queryset
-                ).select_related('user', 'city', 'state', 'country')
+                )
             cache.set('user_profile_{}'.format(
                 self.request.user.userprofile.pk
                 ), user_profile)
@@ -79,6 +81,30 @@ class CustomerProfileView(LoginRequiredMixin, generic.UpdateView):
         context = self.get_context_data(form=form)
         messages.error(self.request, form.errors)
         return self.render(
+            self.request,
+            self.template_name,
+            context=context
+        )
+
+
+class ChangePasswordView(PasswordChangeView):
+    model = get_user_model()
+    template_name = 'accounts/change_password.html'
+    success_url = reverse_lazy('customers:customer_panel')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Password has been changed!')
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        messages.error(
+            self.request,
+            form.errors
+        )
+        print(form.errors)
+        return render(
             self.request,
             self.template_name,
             context=context

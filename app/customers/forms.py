@@ -41,6 +41,7 @@ class UserProfileForm(forms.ModelForm):
         profile = self.instance
         self.initial['country'] = profile.country
         self.initial['city'] = profile.city
+        self.fields['dob'].required = False
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': 'form-control form-control-lg',
