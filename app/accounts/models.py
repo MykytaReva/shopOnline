@@ -48,17 +48,14 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
-    USERNAME_FIELD = 'email'
-
     # Shop or customer account
     SHOP = 2
     CUSTOMER = 1
-
     ROLE_CHOICE = (
         (SHOP, 'Shop'),
         (CUSTOMER, 'Customer'),
     )
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
@@ -101,10 +98,26 @@ class UserProfile(models.Model):
         )
     phone_number = models.CharField(max_length=12, blank=True)
     address = models.CharField(max_length=250, blank=True, null=True)
-    country = models.CharField(max_length=15, blank=True, null=True)
-    state = models.CharField(max_length=40, blank=True, null=True)
-    city = models.CharField(max_length=16, blank=True, null=True)
+    country = models.ForeignKey(
+        'cities_light.Country',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        )
+    city = models.ForeignKey(
+        'cities_light.City',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        )
+    state = models.ForeignKey(
+        'cities_light.Region',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     pin_code = models.CharField(max_length=15, blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

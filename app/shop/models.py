@@ -81,6 +81,10 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        self.name = self.name.capitalize()
+        self.title = self.name.capitalize()
+
 
 class ItemImage(models.Model):
     item = models.ForeignKey(

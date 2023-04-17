@@ -56,7 +56,7 @@ urlpatterns = [
         name='delete_item'
         ),
     path(
-        'detail-catitemegory/<slug:slug>',
+        'detail-item/<slug:slug>',
         views.ItemDetailView.as_view(),
         name='detail_item'
         ),

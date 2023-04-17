@@ -3,13 +3,102 @@
 
 {% block content %}
 
-<div class='container mt-4'>
+<div class='container my-4'>
     <div class="container-fluid">
         <div class="row">
         {% include 'includes/shop_sidebar.html' %}
             <div class="col-md-9 text-center">
-                <h1>{{shop}}</h1>
-                <h3>{{object}}</h3>
+
+                <div class="card">
+                    <h1 class='my-2'>{{shop}}</h1>
+                </div>
+                <div class="card mt-2">
+                    <div class="row text-justify">
+                        <div class="col-5">
+                            {% with last_image=object.itemimage.latest %}
+                                <img class='ml-2 mt-4 img-thumbnail'id='blah' height='125' src="{{ last_image.image.url }}" alt="{{ item.title }}">
+                            {% endwith %}
+                        </div>
+                        <div class="col-7">
+                            <div class="row mb-2 mt-4">
+                                <div class="col-5">
+                                    Name:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {{object.name}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Title:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {{object.title}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Category:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {{object.category.name}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Shop:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {{object.shop.shop_name}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Price:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    ${{object.price}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Approved:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {% if object.is_approved %}
+                                        <i class="fa-solid fa-check" style="color: #045bf1;"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-xmark" style="color: #f50a0a;"></i>
+                                    {% endif %}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Description:
+                                    <hr>
+                                </div>
+                                <div class="col-12">
+                                    {{object.description}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <a href="{% url 'shop:update_item' object.slug %}" class='btn btn-primary mb-3'>Change</a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>

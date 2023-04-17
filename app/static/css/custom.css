@@ -5,6 +5,10 @@
     100% {bottom: -100%}
 }
 
+.ml-2 {
+  margin-left: 1rem !important;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;

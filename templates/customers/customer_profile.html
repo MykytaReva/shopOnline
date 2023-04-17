@@ -1,0 +1,116 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+    <div class="container-fluid">
+        <div class="row">
+        {% include 'includes/customer_sidebar.html' %}
+            <div class="col-md-9 text-center">
+                <!-- Page Content -->
+                <h1>Welcome to your profile settings</h1>
+                <hr>
+                <div class="card mt-3 py-3">
+
+                    <div class="card-body">
+                        <form method="post" enctype='multipart/form-data'>
+                            {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='first_name'>First Name</label>
+                                    {{user_form.first_name}}
+
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='last_name'>last Name</label>
+                                    {{user_form.last_name}}
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='phone_number'>Phone number</label>
+                                    {{form.phone_number}}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='country  '>Country</label>
+                                    {{form.country}}
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='profile_picture'>Profile Picture</label>
+                                    <input type="file" name="profile_picture" accept="image/*" class="form-control form-control-lg" id="id_profile_picture">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" alt="nema" class='img-thumbnail'>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-8 pb-4">
+                                <label class="form-label" for='address'>Address</label>
+                                {{form.address}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='state'>District</label>
+                                    {{form.state}}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='city'>City</label>
+                                    {{form.city}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='pin_code'>Postal Code</label>
+                                    {{form.pin_code}}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4 pb-2">
+                                <div class="form-outline">
+                                    <label class="form-label" for='pin_code'>Date of Birth</label>
+                                    {{form.dob}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="reset" class="btn btn-dark btn-lg btn-block">Reset</button>
+                        <button id='createButton' type='submit' class="btn btn-primary btn-lg btn-block">Create</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -12,7 +12,7 @@ from django.views.generic import View
 from django.contrib.auth import get_user_model
 
 from .forms import SignUpForm
-from .tasks import send_activation_email
+from .tasks import send_activation_email, send_verification_email
 
 
 from shop.models import Shop
@@ -187,3 +187,93 @@ class ActivationView(View):
             return redirect('marketplace:home_view')
 
         return redirect('accounts:login')
+
+
+class ForgotPasswordView(View):
+    template_name = 'accounts/forgot_password.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        email = request.POST.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            user = get_user_model().objects.get(email__exact=email)
+            send_verification_email.delay(user.pk)
+            messages.success(
+                request,
+                'Password reset link has been sent, please check your inbox.'
+                )
+            return redirect('accounts:login')
+        else:
+            messages.error(
+                request,
+                'Account with this email address does not exist.'
+                )
+            return redirect('accounts:forgot_password')
+
+
+class ValidatePasswordView(View):
+    def get(self, request, uidb64, token):
+        # Activate the user by setting the is_active to the True
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_user_model().objects.get(pk=uid)
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            get_user_model().DoesNotExist
+        ):
+            user = None
+
+        if user is not None \
+                and default_token_generator.check_token(user, token):
+            self.request.session['uid'] = uid
+            messages.info(
+                request,
+                'Please reset your password.'
+            )
+            return redirect('accounts:reset_password')
+        else:
+            messages.error(request, 'Invalid activation link.')
+            return redirect('accounts:forgot_password')
+
+        return redirect('accounts:login')
+
+
+class ResetPasswordView(View):
+    template_name = 'accounts/reset_password.html'
+
+    def get(self, request):
+        return render(self.request, self.template_name)
+
+    def post(self, request):
+        password1 = self.request.POST['password1']
+        password2 = self.request.POST['password2']
+
+        if password1 == password2:
+            # better to use urlsafe_base64_decode
+            # to allow activate from another device as well
+            pk = self.request.session.get('uid')
+            user = get_user_model().objects.filter(pk=pk).first()
+            if user:
+                user.set_password(password1)
+                user.is_active = True
+                user.save()
+                messages.success(
+                    self.request,
+                    'Password has been updated'
+                )
+                return redirect('accounts:login')
+            else:
+                messages.error(
+                    self.request,
+                    'User with this email does not exist'
+                )
+        else:
+            messages.error(
+                self.request,
+                'Password do not match'
+            )
+            return redirect('accounts:reset_password')

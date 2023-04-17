@@ -1,9 +1,13 @@
 #django
 Django==4.1.7
 django-extensions==3.2.1
-
+django-countries==7.5.1
+django-cities-light==3.9.2
+django-debug-toolbar==4.0.0
 #python
 python-decouple
+pymemcache==4.0.0
+python-memcached==1.59
 
 #flake8
 flake8==6.0.0

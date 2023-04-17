@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.utils.text import slugify
 
 from django.contrib import messages
-
+from django.core.cache import cache
 
 from .forms import CategoryForm, ItemImageForm, ItemForm
 from .models import Category, Item
@@ -24,6 +24,14 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         context['categories'] = Category.objects.filter(
                 shop__user=self.request.user
             ).order_by('-id')
+        cache_key = 'amount_category'
+        amount_category = cache.get(cache_key)
+        if amount_category:
+            context['amount'] = amount_category
+        else:
+            amount_category = Category.objects.count()
+            context['amount'] = amount_category
+            cache.set(cache_key, amount_category)
         return context
 
 

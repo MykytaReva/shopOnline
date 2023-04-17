@@ -73,9 +73,9 @@
                                     <th scope="col"><a href="{% url 'shop:detail_item' item.slug %}" class="btn btn-outline-success">View</a></th>
                                     <th scope="col"><a href="{% url 'shop:update_item' item.slug %}" class="btn btn-outline-warning">Edit</a></th>
                                     <th>
-                                        <button type="button" class="btn btn-outline-danger model-button">Delete</button>
+                                        <button type="button" class="btn btn-outline-danger model-button" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ item.id }}">Delete</button>
                                         <!-- Modal -->
-                                        <div class="modal fade" tabindex="-1" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal fade" tabindex="-1" id="deleteModal-{{ item.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                 <div class="modal-header">
