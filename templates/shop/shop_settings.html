@@ -1,0 +1,85 @@
+{% extends "includes/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class='container mt-4'>
+    <div class="container-fluid">
+        <div class="row">
+        {% include 'includes/shop_sidebar.html' %}
+        <div class="col-md-9 text-center">
+            <!-- Page Content -->
+            <h1>Welcome to your profile settings</h1>
+            <hr>
+            <div class="card mt-3 py-3">
+
+                <div class="card-body">
+                    <form method="post" enctype='multipart/form-data'>
+                        {% csrf_token %}
+
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4 pb-2">
+                            <div class="form-outline">
+                                <label class="form-label" for='shop_name'>Shop's Name</label>
+                                {% comment %} <input type="text" name="shop_name" value="Best Shop Ever" maxlength="50" required="" id="id_shop_name"> {% endcomment %}
+                                {{ form.shop_name|attr:"class:form-control"}}
+                            </div>
+                            <div class="col-md-12 mt-3 mb-6 pb-4">
+                                <div class="form-outline">
+                                    <label class="form-label" for='avatar'>Shop's Avatar</label>
+                                    <input id='id_avatar' type="file" name="avatar" accept="image/*" class="form-control form-control-lg" ">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6 mb-4 pb-2">
+                            <div class="form-outline">
+                                <img id='blah' src="{% if request.user.shop.avatar %}{{ shop.avatar.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" alt="nema" class='img-thumbnail'>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+
+                    <button id='resButton' type="reset" class="btn btn-dark btn-lg btn-block">Reset</button>
+                    <button id='createButton' type='submit' class="btn btn-primary btn-lg btn-block">Create</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    // Get the relevant elements
+    const id_image = document.querySelector('#id_avatar');
+    const resButton = document.querySelector('#resButton');
+    const previewImage = document.querySelector('#blah');
+    let originalImage = previewImage.src;
+
+    // Update the preview image when a file is selected
+    id_image.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        previewImage.src = URL.createObjectURL(file);
+      }
+    });
+
+    // Reset the form when the reset button is clicked
+    resButton.addEventListener('click', function(event) {
+      // Reset the image preview to the original image
+      previewImage.src = originalImage;
+      // Clear the file input field
+      id_image.value = '';
+    });
+  </script>
+
+{% endblock content %}

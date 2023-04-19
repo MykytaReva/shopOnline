@@ -1,6 +1,6 @@
 from django.views import generic
 from django.contrib.auth.views import FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.utils.text import slugify
 
@@ -8,14 +8,55 @@ from django.contrib import messages
 from django.core.cache import cache
 
 from .forms import CategoryForm, ItemImageForm, ItemForm
-from .models import Category, Item
+from .models import Category, Item, Shop
 
 
-class ShopAdminView(LoginRequiredMixin, generic.TemplateView):
+class CheckShopMixin(UserPassesTestMixin):
+    # check if staff from this shop
+    def test_func(self):
+        item = self.get_object()
+        return self.request.user.is_staff and \
+            self.request.user.userprofile.shop == item.shop
+
+
+class CheckStaffMixin(UserPassesTestMixin):
+    # check if user is staff
+    def test_func(self):
+        return self.request.user.is_staff
+
+
+class ShopSettingsView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.UpdateView
+        ):
+    model = Shop
+    fields = ['shop_name', 'avatar']
+    template_name = 'shop/shop_settings.html'
+    success_url = reverse_lazy('shop:shop_admin')
+
+    def get_object(self, queryset=None):
+        return self.request.user.shop
+
+    def form_valid(self, form):
+        shop_name = form.cleaned_data['shop_name']
+        slug = slugify(shop_name)
+        if Shop.objects.filter(slug=slug).exclude(pk=self.object.pk).exists():
+            messages.error(
+                self.request,
+                f'Shop with the name "{shop_name}" already exists.'
+            )
+            return self.form_invalid(form)
+        form.instance.slug = slug
+        messages.success(self.request, "Shop's settings have been updated")
+        return super().form_valid(form)
+
+
+class ShopAdminView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
     template_name = 'shop/shop_admin_panel.html'
 
 
-class CategoryListView(LoginRequiredMixin, generic.ListView):
+class CategoryListView(LoginRequiredMixin, CheckStaffMixin, generic.ListView):
     model = Category
     template_name = 'shop/category/category_list.html'
 
@@ -35,7 +76,11 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
+class CategoryDetailView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.DetailView
+        ):
     queryset = Category.objects.all()
     template_name = 'shop/category/category_details.html'
 
@@ -48,7 +93,11 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
+class CategoryCreateView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.CreateView
+        ):
     model = Category
     form_class = CategoryForm
     template_name = 'shop/category/category_create_form.html'
@@ -75,7 +124,11 @@ class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
         return response
 
 
-class CategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+class CategoryUpdateView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.UpdateView
+        ):
     queryset = Category.objects.all()
     form_class = CategoryForm
     template_name = 'shop/category/category_update_form.html'
@@ -102,7 +155,11 @@ class CategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
         return response
 
 
-class CategoryDeleteView(LoginRequiredMixin, generic.DeleteView):
+class CategoryDeleteView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.DeleteView
+        ):
     queryset = Category.objects.all()
     success_url = reverse_lazy('shop:list_category')
 
@@ -112,7 +169,11 @@ class CategoryDeleteView(LoginRequiredMixin, generic.DeleteView):
         return response
 
 
-class ItemListView(LoginRequiredMixin, generic.ListView):
+class ItemListView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.ListView
+        ):
     model = Item
     template_name = 'shop/item/item_list.html'
 
@@ -124,7 +185,11 @@ class ItemListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class ItemDetailView(LoginRequiredMixin, generic.DetailView):
+class ItemDetailView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.DetailView
+        ):
     queryset = Item.objects.all()
     template_name = 'shop/item/item_details.html'
 
@@ -134,7 +199,11 @@ class ItemDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class ItemCreateView(LoginRequiredMixin, FormView):
+class ItemCreateView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        FormView
+        ):
     form_class = ItemForm
     image_form_class = ItemImageForm
     template_name = 'shop/item/item_create_form.html'
@@ -197,7 +266,7 @@ class ItemCreateView(LoginRequiredMixin, FormView):
         return self.render_to_response(context)
 
 
-class ItemUpdateView(LoginRequiredMixin, generic.UpdateView):
+class ItemUpdateView(LoginRequiredMixin, CheckShopMixin, generic.UpdateView):
     model = Item
     form_class = ItemForm
     image_form_class = ItemImageForm
@@ -257,13 +326,8 @@ class ItemUpdateView(LoginRequiredMixin, generic.UpdateView):
                     )
                 )
 
-    def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        messages.error(self.request, form.errors)
-        return self.render_to_response(context)
 
-
-class ItemDeleteView(LoginRequiredMixin, generic.DeleteView):
+class ItemDeleteView(LoginRequiredMixin, CheckShopMixin, generic.DeleteView):
     queryset = Item.objects.all()
     success_url = reverse_lazy('shop:list_item')
 

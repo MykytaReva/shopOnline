@@ -6,12 +6,8 @@
 <div class='container my-4'>
     <div class="container-fluid">
         <div class="row">
-        {% include 'includes/shop_sidebar.html' %}
-            <div class="col-md-9 text-center">
 
-                <div class="card">
-                    <h1 class='my-2'>{{object.shop}}</h1>
-                </div>
+            <div class="col-md-12 text-center">
                 <div class="card mt-2">
                     <div class="row text-justify">
                         <div class="col-5">
@@ -20,26 +16,13 @@
                             {% endwith %}
                         </div>
                         <div class="col-7">
-                            <div class="row mb-2 mt-4">
-                                <div class="col-5">
-                                    Name:
-                                    <hr>
-                                </div>
+                            <div class="row mb-2 mt-4 text-center">
                                 <div class="col-7">
-                                    {{object.name}}
-                                    <hr>
+                                    <h2 style='margin-bottom: -6px;'>{{object.name}}</h2>
+                                    <small>{{object.title}}</small>
                                 </div>
                             </div>
-                            <div class="row my-2">
-                                <div class="col-5">
-                                    Title:
-                                    <hr>
-                                </div>
-                                <div class="col-7">
-                                    {{object.title}}
-                                    <hr>
-                                </div>
-                            </div>
+
                             <div class="row my-2">
                                 <div class="col-5">
                                     Category:
@@ -56,7 +39,8 @@
                                     <hr>
                                 </div>
                                 <div class="col-7">
-                                    {{object.shop.shop_name}}
+                                    <a href="{% url 'marketplace:shop' object.shop.slug %}">{{object.shop.shop_name}}</a>
+
                                     <hr>
                                 </div>
                             </div>
@@ -71,36 +55,30 @@
                                 </div>
                             </div>
                             <div class="row my-2">
-                                <div class="col-5">
-                                    Approved:
-                                    <hr>
-                                </div>
-                                <div class="col-7">
-                                    {% if object.is_approved %}
-                                        <i class="fa-solid fa-check" style="color: #045bf1;"></i>
-                                    {% else %}
-                                        <i class="fa-solid fa-xmark" style="color: #f50a0a;"></i>
-                                    {% endif %}
-                                    <hr>
+                                <div class="col">
+                                    <button class='btn btn-danger'>Buy now</button>
+
+
+                                    <button class='btn btn-warning'>Add to Cart</button>
                                 </div>
                             </div>
-                            <div class="row my-2">
-                                <div class="col-5">
-                                    Description:
-                                    <hr>
-                                </div>
-                                <div class="col-12">
-                                    {{object.description}}
-                                    <hr>
-                                </div>
-                            </div>
-                            <a href="{% url 'shop:update_item' object.slug %}" class='btn btn-primary mb-3'>Change</a>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Description:
+                                <hr>
+                            </div>
+                            <div class="col-12">
+                                {{object.description}}
 
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+
     </div>
 </div>
 

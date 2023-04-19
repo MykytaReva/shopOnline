@@ -34,13 +34,11 @@ class UserProfileForm(forms.ModelForm):
             'city',
             'pin_code',
             'dob',
+
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        profile = self.instance
-        self.initial['country'] = profile.country
-        self.initial['city'] = profile.city
         self.fields['dob'].required = False
         for field in self.fields:
             self.fields[field].widget.attrs.update({

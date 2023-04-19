@@ -6,7 +6,12 @@ app_name = 'shop'
 
 urlpatterns = [
     path('', views.ShopAdminView.as_view(), name='shop_admin'),
-
+    # shop settings
+    path(
+        'shop-settings/',
+        views.ShopSettingsView.as_view(),
+        name='shop_settings'
+        ),
     # CRUD category
     path(
         'list-category/',
@@ -60,5 +65,4 @@ urlpatterns = [
         views.ItemDetailView.as_view(),
         name='detail_item'
         ),
-
 ]

@@ -12,7 +12,7 @@ function initAutoComplete(){
   autocomplete.addListener('place_changed', onPlaceChanged);
   }
 
-  
+
 
   function onPlaceChanged (){
       var place = autocomplete.getPlace();

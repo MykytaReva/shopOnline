@@ -1,10 +1,10 @@
-<div class="col-md-3">
+<div class="col-md-3 ">
     <!-- Sidebar -->
-    <div class="list-group">
+    <div class="list-group ">
     <a href="{% url 'customers:customer_panel' %}" class="list-group-item list-group-item-action {% if '/customers/' == request.path %}active{% endif %}">Dashboard</a>
-    <a href="#" class="list-group-item list-group-item-action {% if 'list-item' in request.path or 'update-item' in request.path or 'detail-item' in request.path%}active{%endif%}">Wishlist</a>
-    <a href="{% url 'customers:profile_settings' pk=request.user.userprofile.pk %}" class="list-group-item list-group-item-action {% if 'profile-settings' in request.path %}active{%endif%}">Profile</a>
-    <a href="{% url 'customers:change_password' pk=request.user.pk %}" class="list-group-item list-group-item-action {% if 'change-password' in request.path %}active{%endif%}">Change password</a>
+    <a href="{% url 'customers:wish_list' %}" class="list-group-item list-group-item-action {% if 'wish-list' in request.path %}active{%endif%}">Wishlist</a>
+    <a href="{% url 'customers:profile_settings'  %}" class="list-group-item list-group-item-action {% if 'profile-settings' in request.path %}active{%endif%}">Profile</a>
+    <a href="{% url 'customers:change_password' %}" class="list-group-item list-group-item-action {% if 'change-password' in request.path %}active{%endif%}">Change password</a>
     <a href="#" class="list-group-item list-group-item-action">Orders</a>
     <a href="{% url 'accounts:logout' %}" class="list-group-item list-group-item-action">Logout</a>
     </div>

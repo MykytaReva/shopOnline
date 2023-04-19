@@ -3,48 +3,55 @@
 
 {% block content %}
 
+<div class='container my-2'>
 
+        <div class="page-section restaurant-detail-image-section text-light rounded-pill" style=" max-height: 146px; background:url({% if shop.cover_photo %}{{ shop.cover_photo.url }}{% endif %}) no-repeat scroll 0 0 / cover;">
+        <div class="row" style="
+        height: 148px;">
+            <div class="col-6 mt-3">
+                <h1 style='margin-left: 77px;'><i class="fa-solid fa-shop"></i>{{shop.shop_name}}</h1>
+            </div>
+            <div class="col-6 text-center mt-3">
+                <img class='img-thumbnail' style='margin-left: 8rem !important; margin-top: 0.5rem;; height: 100px' src="{{shop.avatar.url}}" alt="asdfasdf ">
 
-<div class="container text-center">
-<hr>
-<h3>Hello, welcome to shopOnline</h3>
-<hr>
-{% comment %}
-<div class="container" style='width: 200px;height: 200px;'>
-    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            {% with last_image=items.0.itemimage.latest %}
-            <div class="carousel-item active">
-                <img class='card-img-top' src="{{ last_image.image.url }}" alt="{{ item.title }}" style="object-fit: cover; width: 100%; height: 100%;">
             </div>
-            {% endwith %}
-            {% for item in items %}
-            {% if not forloop.first %}
-            {% with last_image=item.itemimage.latest %}
-            <div class="carousel-item">
-                <img class='card-img-top' src="{{ last_image.image.url }}" alt="{{ item.title }}" style="object-fit: cover; width: 100%; height: 100%;">
-            </div>
-            {% endwith %}
-            {% endif %}
-            {% endfor %}
         </div>
-        <ol class="carousel-indicators">
-            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
-            {% for item in items %}
-            <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{forloop.counter}}"></li>
-            {% endfor %}
-        </ol>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </a>
+
+        </div>
+</div>
+<div class="container my-2">
+    <div class="text-center rounded-pill">
+        <div class="row no-gap " style="height: 43px;">
+            <div class="col-3" style="margin-right: -13px;">
+                <p class="btn btn-dark form-control">
+                    {{current_category}}
+                </p>
+            </div>
+            {% comment %} <div class="col-3" style="margin-right: -13px;">
+                <p class="btn btn-dark form-control">
+                    Filter by:
+                </p>
+            </div> {% endcomment %}
+            <div class="col-3">
+                <div class="d-inline-block mx-3 drowdown ml-" style="width:100%;position: relative;">
+
+                    <button class="btn btn-dark form-control drowdown-toggle" type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'>
+                        <i class="fa-regular fa-square-caret-down"></i> Categories <span class="badge bg-secondary">Filter by</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark text-center" aria-labelledby='dropdownMenuButton'  style="position: absolute; width: 100%;">
+                        <li><a class='dropdown-item' href="{% url 'marketplace:shop' shop.slug %}">All</a></li>
+                        {% for category in categories %}
+                        <li><a class="dropdown-item" href="{% url 'marketplace:shop_by_category' shop.slug category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
-  <hr> {% endcomment %}
+
 <div class="container">
     <div class="row">
         {% for item in items  %}
@@ -80,6 +87,7 @@
         {% endfor %}
     </div>
 </div>
+
 {% if is_paginated %}
 <div class="pagination justify-content-center mt-4">
   <ul class="pagination">
@@ -102,6 +110,4 @@
 </div>
 {% endif %}
 
-
 {% endblock content %}
-

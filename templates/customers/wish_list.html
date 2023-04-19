@@ -1,0 +1,69 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+    <div class="container-fluid">
+        <div class="row">
+        {% include 'includes/customer_sidebar.html' %}
+            <div class="col-md-9 text-center">
+                <!-- Page Content -->
+                {% if wish_list %}
+                <h1>Your Wish List</h1>
+                <hr>
+                <div class="container">
+                    <div class="row justify-content-center">
+
+                            {% for item in items  %}
+                                {% if item.is_approved and item.is_available and item in wish_list %}
+                                <div class="col-md-6">
+                                    <div class="card mb-2" style="width: 18rem;">
+                                        {% with last_image=item.itemimage.latest %}
+                                            <img class='ml-2 mt-4 card-img-top ' id='blah' style='height: 125px; width: 254px; object-fit: cover;' src="{{ last_image.image.url }}" alt="{{ item.title }}">
+                                        {% endwith %}
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{item.name}}</h5>
+                                            <p class="card-text">{{item.title}}</p>
+                                            <p class="card-text">${{item.price}}</p>
+                                            <div class="d-flex justify-content-center" style="gap: 10px;">
+                                                <a href="{% url 'shop:detail_item' item.slug %}" class="btn btn-primary">View</a>
+                                                <form action="{% url 'marketplace:add_wish' item.id %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-warning">
+                                                        {% if request.user.is_authenticated %}
+                                                            {% if item in request.user.wish_list.filter %}
+                                                            <i class="fa-solid fa-heart"></i>
+                                                            {% else %}
+                                                            <i class="fa-regular fa-heart"></i>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            Login to Wishlist
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+
+                    </div>
+                </div>
+                {% else %}
+                    <div class="row justify-content-center mt-3 mb-3">
+                        <h1>You do not have any products in your Wish List for now.</h1>
+                        <div class="col-5 text-center mt-3">
+                            <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,21 +1,59 @@
+{% load static %}
 <nav class='container bg-primary text-white rounded-pill'>
     <div class="row mb-2 py-2 px-2">
-        <div class="col-4 text-start">
-            <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store "></i><b>shopOnline</b></a>
+        <div class="col-4 text-start" style="margin-top: 8px;">
+            <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store fa-2xl d-inline-block"></i><h2 class='d-inline-block'>shopOnline</h2></a>
         </div>
-        <div class="col-4 text-center fw-bolder">
-            Marketplace
+        <div class="col-4 text-center fw-bolder" style="margin-top: 13px;">
+            <h3>Marketplace</h3>
         </div>
-        <div class="col-4 text-end pe-2 fw-bolder">
+
+        <div class="col-4 text-end pe-2 fw-bolder"  style="margin-top: 8px;">
             {% if not request.user.is_authenticated %}
             <div class='text-light'>Hello, Visitor!</div>
             <a  class='text-light' href="{% url 'accounts:login' %}">Login</a>
             <span>|</span>
             <a  class='text-light' href="{% url 'accounts:signup' %}">SignUp</a>
             {% else %}
-            <div class='text-light'>Hello, {{ request.user.first_name }}!</div>
-            <a  class='text-light' href="{% url 'accounts:logout' %}">logout</a>
+            {% if request.user.is_staff  and request.user.shop.is_approved %}
+            <div class='d-inline-block mx-3  dropdown'>
+
+                <button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenuButton" data-bs-toggle='dropdown' aria-expanded="false">
+                    <img id='navav' src="{% if request.user.shop.avatar %}{{ request.user.shop.avatar.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" class='navav'>
+                    {{ request.user.shop.shop_name }}
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-dark text-center" aria-labelledby="dropdownMenuButton">
+                    <li><a href="{% url 'shop:shop_admin' %}" class="dropdown-item">Dashboard</a></li>
+                    <a href="{% url 'marketplace:shop' request.user.shop.slug %}" class="dropdown-item">Preview</a>
+                    <a href="{% url 'shop:shop_settings' %}" class="dropdown-item">Shop's settings</a>
+                    <li><a href="{% url 'shop:list_category' %}" class="dropdown-item">Categories</a></li>
+                    <li><a href="{% url 'shop:list_item' %}" class="dropdown-item">Products</a></li>
+                    <li><a href="#" class="dropdown-item">Orders</a></li>
+                    <li><a href="#" class="dropdown-item">Customers</a></li>
+                    <li><a href="#" class="dropdown-item">Orders</a></li>
+                    <li><a href="{% url 'accounts:logout' %}" class="dropdown-item">Logout</a></li>
+                  </ul>
+            </div>
             {% endif %}
+            <div class='d-inline-block mx-3  dropdown'>
+
+                <button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenuButton" data-bs-toggle='dropdown' aria-expanded="false">
+                    <img id='navav' src="{% if request.user.userprofile.profile_picture %}{{ request.user.userprofile.profile_picture.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" class='navav'>
+                    {{ request.user.first_name }}
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-dark text-center" aria-labelledby="dropdownMenuButton">
+                    <li><a href="{% url 'customers:customer_panel' %}" class="dropdown-item">Dashboard</a></li>
+                    <li><a href="{% url 'customers:wish_list' %}" class="dropdown-item">Wishlist</a></li>
+                    <li><a href="{% url 'customers:profile_settings' %}" class="dropdown-item">Profile</a></li>
+                    <li><a href="{% url 'customers:change_password' %}" class="dropdown-item">Change password</a></li>
+                    <li><a href="#" class="dropdown-item">Orders</a></li>
+                    <li><a href="{% url 'accounts:logout' %}" class="dropdown-item">Logout</a></li>
+                  </ul>
+            </div>
+
+
+            {% endif %}
+
         </div>
 
     </div>

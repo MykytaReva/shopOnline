@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'cities_light',
     'ajax_select',
+    'widget_tweaks',
 
     # apps
     'accounts',

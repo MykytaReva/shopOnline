@@ -6,6 +6,14 @@ def shop_docs(instance, filename):
     return 'docs/{0}/{1}'.format(instance.user.id, filename)
 
 
+def shop_avatar(instance, filename):
+    return 'shopAvatar/{0}/{1}'.format(instance.user.id, filename)
+
+
+def shop_cover(instance, filename):
+    return 'shopCover/{0}/{1}'.format(instance.user.id, filename)
+
+
 def item_photo(instance, filename):
     return 'item_photo/{0}/{1}'.format(instance.item.id, filename)
 
@@ -24,6 +32,16 @@ class Shop(models.Model):
     shop_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
     docs = models.FileField(upload_to=shop_docs)
+    avatar = models.ImageField(
+        upload_to=shop_avatar,
+        blank=True,
+        null=True
+        )
+    cover_photo = models.ImageField(
+        upload_to=shop_cover,
+        blank=True,
+        null=True
+        )
     is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -71,6 +89,12 @@ class Item(models.Model):
         null=True,
         )
     slug = models.SlugField(unique=True)
+    # wish list
+    wish_list = models.ManyToManyField(
+        User,
+        related_name='wish_list',
+        blank=True
+        )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -83,7 +107,7 @@ class Item(models.Model):
 
     def clean(self):
         self.name = self.name.capitalize()
-        self.title = self.name.capitalize()
+        self.title = self.title.capitalize()
 
 
 class ItemImage(models.Model):
@@ -97,7 +121,7 @@ class ItemImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.item.title} - {self.item.id}"
+        return f"{self.item.name} - {self.item.id}"
 
     class Meta:
         get_latest_by = 'created_at'

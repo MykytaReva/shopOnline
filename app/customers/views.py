@@ -1,17 +1,21 @@
 from django.shortcuts import render
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-
-from accounts.models import UserProfile
-
-from .forms import UserForm, UserProfileForm
-
 from django.core.cache import cache
 from django.contrib.auth.views import PasswordChangeView
+
+from accounts.models import UserProfile
+from shop.models import Item
+from .forms import UserForm, UserProfileForm
+
+
+class CheckShopMixin(UserPassesTestMixin):
+    def test_func(self):
+        return not self.request.user.is_staff
 
 
 class CustomerPanelView(LoginRequiredMixin, generic.TemplateView):
@@ -26,19 +30,7 @@ class CustomerProfileView(LoginRequiredMixin, generic.UpdateView):
     success_url = reverse_lazy('customers:customer_panel')
 
     def get_object(self, queryset=None):
-        # check if the user profile is already in cache
-        user_profile = cache.get('user_profile_{}'.format(
-            self.request.user.userprofile.pk
-            ))
-        if user_profile is None:
-            # if not, retrieve it from the database and store it in the cache
-            user_profile = super().get_object(
-                queryset
-                )
-            cache.set('user_profile_{}'.format(
-                self.request.user.userprofile.pk
-                ), user_profile)
-        return user_profile
+        return self.request.user.userprofile
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,10 +79,13 @@ class CustomerProfileView(LoginRequiredMixin, generic.UpdateView):
         )
 
 
-class ChangePasswordView(PasswordChangeView):
+class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
     model = get_user_model()
     template_name = 'accounts/change_password.html'
     success_url = reverse_lazy('customers:customer_panel')
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def form_valid(self, form):
         messages.success(self.request, 'Password has been changed!')
@@ -109,3 +104,14 @@ class ChangePasswordView(PasswordChangeView):
             self.template_name,
             context=context
         )
+
+
+class WishListView(LoginRequiredMixin, generic.ListView):
+    model = Item
+    template_name = 'customers/wish_list.html'
+    context_object_name = 'items'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['wish_list'] = self.request.user.wish_list.all()
+        return context
