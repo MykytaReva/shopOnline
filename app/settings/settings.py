@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'accounts',
     'marketplace',
     'shop',
+    'cart',
 
 ]
 
@@ -75,6 +76,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.daily_newsletter_form',
                 'accounts.context_processors.get_google_api',
+                'cart.context_processors.cart_counter',
             ],
         },
     },

@@ -1,21 +1,36 @@
 {% load static %}
 <nav class='container bg-primary text-white rounded-pill'>
     <div class="row mb-2 py-2 px-2">
-        <div class="col-4 text-start" style="margin-top: 8px;">
+        <div class="col-2 text-start" style="margin-top: 8px;">
             <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store fa-2xl d-inline-block"></i><h2 class='d-inline-block'>shopOnline</h2></a>
         </div>
-        <div class="col-4 text-center fw-bolder" style="margin-top: 13px;">
+        <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
             <h3>Marketplace</h3>
         </div>
 
-        <div class="col-4 text-end pe-2 fw-bolder"  style="margin-top: 8px;">
+        <div class="col-5 text-end pe-2 fw-bolder"  style="margin-top: 8px;">
             {% if not request.user.is_authenticated %}
             <div class='text-light'>Hello, Visitor!</div>
+            <a class='text-light text-decoration-none' href="{% url 'cart:cart' %}">
+
+              <i class="fa fa-shopping-cart" style='font-size: 20px'></i>
+                  <span id='cart-c' class="badge badge-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: -5px;'>
+                    {{cart_count}}
+                  </span>
+            </a>
             <a  class='text-light' href="{% url 'accounts:login' %}">Login</a>
             <span>|</span>
             <a  class='text-light' href="{% url 'accounts:signup' %}">SignUp</a>
+
             {% else %}
+            <a class='text-light text-decoration-none' href="{% url 'cart:cart' %}">
+              <i class="fa fa-shopping-cart" style='font-size: 20px'></i>
+                  <span id='cart-c' class="badge badge-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: -5px;'>
+                    {{cart_count}}</span>
+            </a>
+
             {% if request.user.is_staff  and request.user.shop.is_approved %}
+
             <div class='d-inline-block mx-3  dropdown'>
 
                 <button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenuButton" data-bs-toggle='dropdown' aria-expanded="false">

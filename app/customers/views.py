@@ -98,7 +98,7 @@ class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
             self.request,
             form.errors
         )
-        print(form.errors)
+
         return render(
             self.request,
             self.template_name,
@@ -114,4 +114,5 @@ class WishListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context['wish_list'] = self.request.user.wish_list.all()
+        context['wish_count'] = self.request.user.wish_list.count()
         return context

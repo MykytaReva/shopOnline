@@ -48,9 +48,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
-    USERNAME_FIELD = 'email'
-
     # Shop or customer account
     SHOP = 2
     CUSTOMER = 1

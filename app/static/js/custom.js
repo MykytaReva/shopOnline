@@ -12,8 +12,6 @@ function initAutoComplete(){
   autocomplete.addListener('place_changed', onPlaceChanged);
   }
 
-
-
   function onPlaceChanged (){
       var place = autocomplete.getPlace();
 
@@ -117,6 +115,7 @@ $(document).ready(function() {
 });
 
 
+
 $(document).ready(function() {
   $('.model-button').on('click', function(e) {
     e.preventDefault();
@@ -137,3 +136,209 @@ $(document).ready(function() {
   });
 });
 
+
+// wishlist home page
+$(document).ready(function() {
+  // submit form data using AJAX
+  $("form[id^='wish-form']").on('submit', function(event) {
+    event.preventDefault();
+
+    // disable submit button
+
+    // send AJAX request
+    $.ajax({
+      url: $(this).attr('action'),
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function(response) {
+        // Enable submit button
+        $('#wish-btn-' + response.item_id).attr('disabled', false);
+
+        // Update the heart icon
+        if ($('#fa-' + response.item_id).hasClass('fa-regular')) {
+            $('#fa-' + response.item_id).removeClass('fa-regular').addClass('fa-solid');
+        } else {
+            $('#fa-' + response.item_id).removeClass('fa-solid').addClass('fa-regular');
+        }
+
+        Swal.fire({
+            icon: response.icon,
+            title: response.message,
+        });
+    },
+
+      error: function(xhr, status, error) {
+        // enable submit button
+        $('#report-btn').attr('disabled', false);
+      }
+    });
+  });
+});
+
+  // wishlist page remove card
+  $(document).ready(function() {
+    // submit form data using AJAX
+    $("form[id^='wish-page']").on('submit', function(event) {
+      event.preventDefault();
+
+      // disable submit button
+
+      // send AJAX request
+      var form = $(this);
+      $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+
+          Swal.fire({
+              icon: response.icon,
+              title: response.message,
+          });
+          var itemId = form.attr('id').split('-')[2];
+          $('#wish-card-' + itemId).remove();
+
+          var wishDiv = $('#w-count');
+          var wqty = parseInt(wishDiv.text());
+          wishDiv.text(wqty - 1);
+          if (wqty == 1) {
+            $('#empty-wishlist').css('display', 'block');
+          }
+      },
+
+        error: function(xhr, status, error) {
+          // enable submit button
+          $('#report-btn').attr('disabled', false);
+        }
+      });
+    });
+  });
+
+
+// add to the cart
+$(document).ready(function() {
+  // submit form data using AJAX
+  $("form[id^='add-cart']").on('submit', function(event) {
+    event.preventDefault();
+
+    // disable submit button
+
+    // send AJAX request
+    var form = $(this);
+    $.ajax({
+      url: $(this).attr('action'),
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function(response) {
+        // show success/error message
+        Swal.fire({
+          icon: response.icon,
+          title: response.message,
+        });
+        $('#add-cart-btn').attr('disabled', true);
+        if ($('#fa-icon').hasClass('fa fa-cart-plus')) {
+          $('#fa-icon').removeClass('fa fa-cart-plus').addClass('fa fa-shopping-cart');
+      }
+        // increment quantity
+        var itemId = form.attr('id').split('-')[2];
+        var quantityDiv = $('#qty-' + itemId);
+        var cartSpan = $('#cart-c');
+        var quantity = parseInt(quantityDiv.text());
+        var quantityCart = parseInt(cartSpan.text());
+        quantityDiv.text(quantity + 1);
+        cartSpan.text(quantityCart + 1);
+
+      },
+      error: function(xhr, status, error) {
+        // enable submit button
+      }
+    });
+  });
+});
+
+// subtract from the cart
+$(document).ready(function() {
+  // submit form data using AJAX
+  $("form[id^='subtract-cart']").on('submit', function(event) {
+    event.preventDefault();
+
+    // disable submit button
+
+    // send AJAX request
+    var form = $(this);
+    $.ajax({
+      url: $(this).attr('action'),
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function(response) {
+        // show success/error message
+        Swal.fire({
+          icon: response.icon,
+          title: response.message,
+        });
+        // increment quantity
+        var itemId = form.attr('id').split('-')[2];
+        var quantityDiv = $('#qty-' + itemId);
+        var cartSpan = $('#cart-c');
+        var quantity = parseInt(quantityDiv.text());
+        var quantityCart = parseInt(cartSpan.text());
+        quantityDiv.text(quantity - 1);
+        cartSpan.text(quantityCart - 1);
+        // delete item if quantity is 0
+        if (quantity - 1 <= 0) {
+          $('#tr-' + itemId).remove();
+        }
+        if ($('.table tbody tr').length == 0) {
+          $('#empty-cart').css('display', 'block');
+          $('#tab').css('display', 'none');
+        }
+
+      },
+      error: function(xhr, status, error) {
+        // enable submit button
+      }
+    });
+  });
+});
+
+//delete from the cart
+$(document).ready(function() {
+  // submit form data using AJAX
+  $("form[id^='remove-cart']").on('submit', function(event) {
+    event.preventDefault();
+
+    // disable submit button
+
+    // send AJAX request
+    var form = $(this);
+    $.ajax({
+      url: $(this).attr('action'),
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function(response) {
+        // show success/error message
+        Swal.fire({
+          icon: response.icon,
+          title: response.message,
+        });
+        var itemId = form.attr('id').split('-')[2];
+        var quantityDiv = $('#qty-' + itemId);
+        var cartSpan = $('#cart-c');
+        var quantity = parseInt(quantityDiv.text());
+        var quantityCart = parseInt(cartSpan.text());
+        cartSpan.text(quantityCart - quantity);
+
+        // delete item if quantity is 0
+        $('#tr-' + itemId).remove();
+        if ($('.table tbody tr').length == 0) {
+          $('#empty-cart').css('display', 'block');
+          $('#tab').css('display', 'none');
+        }
+
+      },
+      error: function(xhr, status, error) {
+        // enable submit button
+      }
+    });
+  });
+});

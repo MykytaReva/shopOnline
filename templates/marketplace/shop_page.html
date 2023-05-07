@@ -67,15 +67,18 @@
                         <p class="card-text">${{item.price}}</p>
                         <div class="d-flex justify-content-center" style="gap: 10px;">
                             <a href="{% url 'marketplace:item_details' item.slug %}" class="btn btn-primary">View</a>
-                            <form action="{% url 'marketplace:add_wish' item.id %}" method="POST">
+                            <form id='wish-form-{{item.id}}' action="{% url 'marketplace:add_wish' item.id %}"  method="POST">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-warning">
+                                <button id='wish-btn-{{item.id}}' type="submit" class="btn btn-warning">
+
 
                                         {% if item in request.user.wish_list.filter %}
-                                        <i class="fa-solid fa-heart"></i>
+                                        <i id='fa-{{item.id}}' class="fa-solid fa-heart"></i>
                                         {% else %}
-                                        <i class="fa-regular fa-heart"></i>
+                                        <i id='fa-{{item.id}}' class="fa-regular fa-heart"></i>
                                         {% endif %}
+
+
 
                                 </button>
                             </form>

@@ -1,9 +1,11 @@
 from django.views import generic
-from shop.models import Item, Shop, Category
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from django.contrib import messages
+from django.http import JsonResponse
+
+from shop.models import Item, Shop, Category
+from cart.cart import CookiesCart
 
 
 class HomeView(generic.ListView):
@@ -57,17 +59,28 @@ class AddToWishListView(LoginRequiredMixin, View):
         item = get_object_or_404(Item, id=id)
         if item.wish_list.filter(id=self.request.user.id).exists():
             item.wish_list.remove(self.request.user)
-            messages.warning(
-                self.request,
-                '"{}" has been removed from WishList.'.format(item.name)
-            )
+            return JsonResponse({
+                'message':
+                '"{}" has been removed from WishList.'.format(item.name),
+                'icon': 'warning',
+                'item_id': item.id
+                })
+            # messages.warning(
+            #     self.request,
+            #     '"{}" has been removed from WishList.'.format(item.name)
+            # )
         else:
             item.wish_list.add(self.request.user)
-            messages.success(
-                self.request,
-                '{} has been added to WishList'.format(item.name)
-            )
-        return redirect(request.META["HTTP_REFERER"])
+            # messages.success(
+            #     self.request,
+            #     '{} has been added to WishList'.format(item.name)
+            # )
+            return JsonResponse({
+                'message':
+                '"{}" has been added to WishList.'.format(item.name),
+                'icon': 'success',
+                'item_id': item.id
+                })
 
     def dispatch(self, request, *args, **kwargs):
         # redirect if request method Get
@@ -75,7 +88,11 @@ class AddToWishListView(LoginRequiredMixin, View):
             return redirect('marketplace:home_view')
         # show reason of login
         elif not self.request.user.is_authenticated:
-            messages.warning(self.request, self.login_required_message)
+            # messages.warning(self.request, self.login_required_message)
+            return JsonResponse({
+                'message': self.login_required_message,
+                'icon': 'error',
+                })
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -85,4 +102,25 @@ class ItemFullView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['current_item'] = self.get_object()
+        if self.request.user.is_authenticated:
+            context['in_cart'] = self.request.user.cart_items.filter(
+                item=self.get_object()
+                ).exists()
+        else:
+            cart = CookiesCart(self.request)
+            cart_items = []
+            for item_id, item_data in cart.cart.items():
+                item = Item.objects.get(pk=item_id)
+                qty = item_data.get('qty')
+                cart_items.append({
+                    'item': item,
+                    'quantity': qty,
+                })
+            cart_items = sorted(cart_items, key=lambda x: x['item'].created_at)
+            cart_item_ids = [item['item'].id for item in cart_items]
+            in_cart = self.get_object().id in cart_item_ids
+
+            context['in_cart'] = in_cart
+            context['cart_itemss'] = cart_items
         return context

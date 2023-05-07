@@ -54,12 +54,35 @@
                                     <hr>
                                 </div>
                             </div>
+                            <div>
+                            </div>
                             <div class="row my-2">
-                                <div class="col">
-                                    <button class='btn btn-danger'>Buy now</button>
+                                <div class="col d-flex justify-content-center align-items-center p-2 gap-4">
+                                    <button class='btn btn-danger btn-block'>Buy now</button>
+                                    <form id='wish-form-{{item.id}}' action="{% url 'marketplace:add_wish' item.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button id='wish-btn-{{item.id}}' type="submit" class="btn btn-info btn-block">
 
+                                            {% if item in request.user.wish_list.filter %}
+                                            <i id='fa-{{item.id}}' class="fa-solid fa-heart"></i>
+                                            {% else %}
+                                            <i id='fa-{{item.id}}' class="fa-regular fa-heart"></i>
+                                            {% endif %}
 
-                                    <button class='btn btn-warning'>Add to Cart</button>
+                                        </button>
+                                    </form>
+
+                                    <form id='add-cart' method="POST" action="{% url 'cart:add-to-cart' object.pk %}">
+                                        {% csrf_token %}
+                                        <button id='add-cart-btn'  {% if in_cart %}disabled='true'{%endif%} type="submit" class="btn btn-warning btn-block">
+                                            {% if in_cart %}
+                                            <i id='fa-icon' class="fa fa-shopping-cart"></i>
+                                            {% else %}
+                                            <i id='fa-icon' class="fa fa-cart-plus"></i>
+                                            {% endif %}
+                                        </button>
+
+                                    </form>
                                 </div>
                             </div>
                         </div>
