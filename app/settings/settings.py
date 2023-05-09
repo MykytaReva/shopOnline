@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'marketplace',
     'shop',
     'cart',
+    'payment',
 
 ]
 
@@ -195,3 +196,6 @@ CELERY_BEAT_SCHEDULE = {
 
 # location
 GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')

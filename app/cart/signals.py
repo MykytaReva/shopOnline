@@ -13,7 +13,7 @@ def transfer_session_cart_to_database_cart(sender, request, user, **kwargs):
         for item_id, item_data in session_cart.cart.items():
             cart_item, created = Cart.objects.get_or_create(
                 user=user,
-                item_id=item_id,
+                item_id=int(item_id),
                 quantity=item_data['qty'],
             )
             if not created:

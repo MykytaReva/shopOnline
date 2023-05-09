@@ -12,7 +12,7 @@
                 <div style="display: none;" id='w-count'><h3>{{wish_count}}</h3></div>
                 <hr>
                 {% if wish_list %}
-                
+
                 <div id='empty-wishlist' class="row justify-content-center mt-3 mb-3" style="display: none;">
                     <h1>You do not have any products in your Wish List for now.</h1>
                     <div class="col text-center mt-3">
@@ -34,7 +34,7 @@
                                             <p class="card-text">{{item.title}}</p>
                                             <p class="card-text">${{item.price}}</p>
                                             <div class="d-flex justify-content-center" style="gap: 10px;">
-                                                <a href="{% url 'shop:detail_item' item.slug %}" class="btn btn-primary">View</a>
+                                                <a href="{% url 'marketplace:item_details' item.slug %}" class="btn btn-primary">View</a>
                                                 <form id='wish-page-{{item.id}}' action="{% url 'marketplace:add_wish' item.id %}"  method="POST">
                                                     {% csrf_token %}
                                                     <button id='page-btn-{{item.id}}' type="submit" class="btn btn-warning">
@@ -49,6 +49,17 @@
 
 
                                                     </button>
+                                                </form>
+                                                <form id='add-cart' method="POST" action="{% url 'cart:add-to-cart' item.pk %}">
+                                                    {% csrf_token %}
+                                                    <button id='add-cart-btn'  {% if in_cart %}disabled='true'{%endif%} type="submit" class="btn btn-warning btn-block">
+                                                        {% if in_cart %}
+                                                        <i id='fa-icon' class="fa fa-shopping-cart"></i>
+                                                        {% else %}
+                                                        <i id='fa-icon' class="fa fa-cart-plus"></i>
+                                                        {% endif %}
+                                                    </button>
+
                                                 </form>
                                             </div>
                                         </div>

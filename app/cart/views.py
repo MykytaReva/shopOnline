@@ -91,20 +91,11 @@ class CartView(generic.TemplateView):
         else:
             # Get cart items from session for anonymous user
             cart = CookiesCart(self.request)
-            cart_items = []
-            for item_id, item_data in cart.cart.items():
-                item = Item.objects.get(pk=item_id)
-                qty = item_data.get('qty')
-                cart_items.append({
-                    'item': item,
-                    'quantity': qty,
-                })
-            cart_items = sorted(cart_items, key=lambda x: x['item'].created_at)
+            cart_items = cart.get_items()
             cart_count = len(cart_items)
 
-            context['total'] = sum(
-                [it['quantity']*it['item'].price for it in cart_items]
-                )
+            context['total'] = cart.get_total_price()
+
         context['cart_items'] = cart_items
         context['cart_counter'] = cart_count
 

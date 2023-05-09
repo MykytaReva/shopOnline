@@ -1,4 +1,6 @@
 let autocomplete;
+let addressComponents = {}; // declare addressComponents in a global scope
+
 
 function initAutoComplete(){
   autocomplete = new google.maps.places.Autocomplete(
@@ -19,12 +21,16 @@ function initAutoComplete(){
       if (!place.geometry){
           document.getElementById('id_address').placeholder = "Start typing...";
       }
-      else{
-          console.log('place name=>', place.name)
-      }
-
-      // get the address components and assign them to the fields
-      // console.log(place);
+      
+      addressComponents = place.address_components.reduce((obj, item) => { // assign value to addressComponents
+        if (item.types[0] === 'country') {
+          obj[item.types[0]] = item.short_name;
+        } else {
+          obj[item.types[0]] = item.long_name;
+        }
+        return obj;
+      }, {});
+      console.log(addressComponents);
       var geocoder = new google.maps.Geocoder()
       var address = document.getElementById('id_address').value
 
@@ -67,6 +73,7 @@ function initAutoComplete(){
 
   }
 
+
 function checkRole(role) {
   if (role == 'thisshop') {
     document.getElementById('thisshop').style.display = 'block';
@@ -79,7 +86,7 @@ function checkRole(role) {
   }
 }
 
-
+//newsletter
 $(document).ready(function() {
   // submit form data using AJAX
   $('#newsletter-form').on('submit', function(event) {
@@ -115,7 +122,7 @@ $(document).ready(function() {
 });
 
 
-
+//model
 $(document).ready(function() {
   $('.model-button').on('click', function(e) {
     e.preventDefault();
@@ -243,10 +250,17 @@ $(document).ready(function() {
         var itemId = form.attr('id').split('-')[2];
         var quantityDiv = $('#qty-' + itemId);
         var cartSpan = $('#cart-c');
+        var item_price = $('#price-' + itemId)
+        var price = $('#ttott')
+
+        var item_price_sum = parseFloat(item_price.text()).toFixed(2);
+        var sumprice = parseFloat(price.text()).toFixed(2);
         var quantity = parseInt(quantityDiv.text());
         var quantityCart = parseInt(cartSpan.text());
+
         quantityDiv.text(quantity + 1);
         cartSpan.text(quantityCart + 1);
+        price.text((parseFloat(sumprice)+parseFloat(item_price_sum)).toFixed(2));
 
       },
       error: function(xhr, status, error) {
@@ -280,10 +294,17 @@ $(document).ready(function() {
         var itemId = form.attr('id').split('-')[2];
         var quantityDiv = $('#qty-' + itemId);
         var cartSpan = $('#cart-c');
+        var item_price = $('#price-' + itemId)
+        var price = $('#ttott')
+
+        var item_price_sum = parseFloat(item_price.text()).toFixed(2);
+        var sumprice = parseFloat(price.text()).toFixed(2);
         var quantity = parseInt(quantityDiv.text());
         var quantityCart = parseInt(cartSpan.text());
+
         quantityDiv.text(quantity - 1);
         cartSpan.text(quantityCart - 1);
+        price.text((parseFloat(sumprice)-parseFloat(item_price_sum)).toFixed(2));
         // delete item if quantity is 0
         if (quantity - 1 <= 0) {
           $('#tr-' + itemId).remove();
@@ -324,9 +345,16 @@ $(document).ready(function() {
         var itemId = form.attr('id').split('-')[2];
         var quantityDiv = $('#qty-' + itemId);
         var cartSpan = $('#cart-c');
+        var item_price = $('#price-' + itemId)
+        var price = $('#ttott')
+
+        var item_price_sum = parseFloat(item_price.text()).toFixed(2);
+        var sumprice = parseFloat(price.text()).toFixed(2);
         var quantity = parseInt(quantityDiv.text());
         var quantityCart = parseInt(cartSpan.text());
+
         cartSpan.text(quantityCart - quantity);
+        price.text((parseFloat(sumprice)-parseFloat(item_price_sum)*parseFloat(quantity)).toFixed(2));
 
         // delete item if quantity is 0
         $('#tr-' + itemId).remove();

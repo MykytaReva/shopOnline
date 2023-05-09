@@ -1,3 +1,6 @@
+from shop.models import Item
+
+
 class CookiesCart:
     '''
     Store cart items in cookies for anonymous users
@@ -44,3 +47,21 @@ class CookiesCart:
 
     def save(self):
         self.session.modified = True
+
+    def get_items(self):
+        cart_items = []
+        for item_id, item_data in self.cart.items():
+            item = Item.objects.get(pk=item_id)
+            qty = item_data.get('qty')
+            cart_items.append({
+                'item': item,
+                'quantity': qty,
+            })
+        cart_items = sorted(cart_items, key=lambda x: x['item'].created_at)
+        return cart_items
+
+    def get_total_price(self):
+        total_price = sum(
+            [it['quantity']*it['item'].price for it in self.get_items()]
+            )
+        return total_price

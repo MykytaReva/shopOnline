@@ -8,7 +8,7 @@ urlpatterns = [
     path(
         'add-to-cart/<int:pk>/',
         views.AddToCartView.as_view(),
-        name='add-to-cart'
+        name='add-to-cart',
         ),
     path(
         'subtract-from-cart/<int:pk>/',

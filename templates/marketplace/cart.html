@@ -47,7 +47,11 @@
 
 
                               </td>
-                              <td>{{ cart_item.item.price }}</td>
+                              <td>
+                                <div id='price-{{cart_item.item.id}}'>
+                                  {{ cart_item.item.price }}
+                                </div>
+                              </td>
                               <td>
                                 <form id='remove-cart-{{cart_item.item.pk}}' method="POST" action="{% url 'cart:remove-from-cart' cart_item.item.pk %}">
                                   {% csrf_token %}
@@ -59,7 +63,8 @@
                         </tbody>
                       </table>
                       <hr>
-                      <h4>Total:${{total}}</h2>
+                      <h4>Total:$<span id='ttott'>{{total}}</span></h2>
+                        <a type='button' href="{% url 'payment:cart' %}" class='btn btn-success'>Buy now!</a>
                     {% else %}
                     <h3>Cart is empty</h3>
                     {% endif %}
@@ -68,5 +73,5 @@
         </div>
 
     </div>
-</div>
+
 {% endblock content %}
