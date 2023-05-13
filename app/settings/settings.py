@@ -12,7 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-LOGIN_REDIRECT_URL = 'marketplace:home_view'
+# LOGIN_REDIRECT_URL = 'marketplace:home_view'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'shop',
     'cart',
     'payment',
+    'orders',
 
 ]
 
@@ -199,3 +200,5 @@ GOOGLE_API_KEY = config('GOOGLE_API_KEY')
 
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+
+STRIPE_ENDPOINT_SECRET = config('STRIPE_ENDPOINT_SECRET')

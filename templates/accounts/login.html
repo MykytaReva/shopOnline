@@ -13,13 +13,13 @@
               <form method="post">
                 {% csrf_token %}
               <div class="form-outline mb-4">
-                <label class="form-label" for="typeEmailX-2">Email</label>
-                <input type="email" name='email' id="typeEmailX-2" class="form-control form-control-lg" placeholder='email' />
+                <label class="form-label" for="id_username">Email</label>
+                <input type="email" name='email' id="id_username" class="form-control form-control-lg" placeholder='email' />
               </div>
 
               <div class="form-outline mb-3">
-                <label class="form-label" for="typePasswordX-2">Password</label>
-                <input type="password" name='password' id="typePasswordX-2" class="form-control form-control-lg" placeholder='password' />
+                <label class="form-label" for="id_password">Password</label>
+                <input type="password" name='password' id="id_password" class="form-control form-control-lg" placeholder='password' />
 
               </div>
               <div class="row">
@@ -32,6 +32,7 @@
               </div>
 
               <!-- Checkbox -->
+              <input type="hidden" name="next" value="{{ request.GET.next }}" />
               <button id='subButton' class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
             </form>
 

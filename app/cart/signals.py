@@ -14,10 +14,6 @@ def transfer_session_cart_to_database_cart(sender, request, user, **kwargs):
             cart_item, created = Cart.objects.get_or_create(
                 user=user,
                 item_id=int(item_id),
-                quantity=item_data['qty'],
-            )
-            if not created:
-                cart_item.quantity += item_data['qty']
-                cart_item.save()
+                )
         # Clear session cart
         session_cart.clear()

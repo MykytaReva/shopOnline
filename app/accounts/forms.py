@@ -1,5 +1,6 @@
 from django import forms
 from .models import User, DailyLetter
+from django.contrib.auth import get_user_model
 
 
 class SignUpForm(forms.ModelForm):
@@ -47,3 +48,32 @@ class DailyLetterForm(forms.ModelForm):
             'name': 'daily-email',
             'class': 'form-control form-control-lg',
             })
+
+
+class EmailAuthenticationForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'autofocus': True})
+    )
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        if email and password:
+            self.cleaned_data['username'] = email  # Set email as the username
+
+        return self.cleaned_data
+
+    def get_user(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            try:
+                return get_user_model().objects.get(email=email)
+            except User.DoesNotExist:
+                return None
+        return None

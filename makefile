@@ -24,3 +24,6 @@ celery:
 
 celery_beat:
 	cd app && celery -A settings beat --loglevel=INFO
+
+make stripe:
+	stripe listen --forward-to localhost:8000/payment/webhook/

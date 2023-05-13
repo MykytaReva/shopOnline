@@ -38,29 +38,45 @@ form.addEventListener('submit', function(ev){
     var city = document.getElementById('id_city').value;
     // var country = document.getElementById('id_country').value;
 
-    stripe.confirmCardPayment(clientsecret, {
-        payment_method: {
-            card: card,
-            billing_details:{
-                name: firstName+lastName,
-                address: {
-                    line1: address,
-                    postal_code: postCode,
-                    country: country,
-                    city: city
-                }
-            },
-        }
-    }).then(function(result){
-        if (result.error) {
-            console.log('payment error')
-            console.log(result.error.message)
-        } else {
-            if (result.paymentIntent.status == 'succeeded') {
-                console.log('payment processed')
+    $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:8000/orders/add/',
+        data: {
+            order_key: clientsecret,
+            csrfmiddlewaretoken: CSRF_TOKEN,
+            action: 'post',
+        },
+        success: function (json) {
+            console.log(json.success)
 
-                window.location.replace('http://127.0.0.1:8000/payment/orderplaced/');
-            }
-        }
+            stripe.confirmCardPayment(clientsecret, {
+                payment_method: {
+                    card: card,
+                    billing_details:{
+                        name: firstName+lastName,
+                        address: {
+                            line1: address,
+                            postal_code: postCode,
+                            country: country,
+                            city: city
+                        }
+                    },
+                }
+            }).then(function(result){
+                if (result.error) {
+                    console.log('payment error')
+                    console.log(result.error.message)
+                } else {
+                    if (result.paymentIntent.status == 'succeeded') {
+                        console.log('payment processed')
+
+                        window.location.replace('http://127.0.0.1:8000/payment/orderplaced/');
+                    }
+                }
+            });
+
+        },
+        error: function(xhr, errmsg, err){},
     });
-})
+
+});

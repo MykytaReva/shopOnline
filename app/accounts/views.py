@@ -2,51 +2,51 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib import messages, auth
 from django.template.defaultfilters import slugify
-
+from urllib.parse import urlparse
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import View
-
 from django.contrib.auth import get_user_model
 
-from .forms import SignUpForm
+from .forms import SignUpForm, EmailAuthenticationForm
 from .tasks import send_activation_email, send_verification_email
-
 
 from shop.models import Shop
 from shop.forms import ShopForm
 
 
 class SignInView(LoginView):
-    success_url = reverse_lazy('marketplace:home_view')
     template_name = 'accounts/login.html'
+    authentication_form = EmailAuthenticationForm
 
-    def form_valid(self, email, password):
-        """Security check complete. Log the user in."""
-        if get_user_model().objects.filter(email=email).exists():
-            user = auth.authenticate(email=email, password=password)
-            return user
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
+        user = form.get_user()
 
-    def post(self, request, *args, **kwargs):
-        super().post(self.request, *args, **kwargs)
-        email = self.request.POST['email']
-        password = self.request.POST['password']
-        user = self.form_valid(email, password)
-
-        # check if account exists:
+        # Check if account exists
         if not get_user_model().objects.filter(email=email).exists():
             messages.error(
                 self.request,
                 'Acount with this email address does not exists.'
             )
             return redirect('accounts:login')
+
+        # check if password is correct:
+        if not user.check_password(password):
+            messages.error(
+                self.request,
+                'Incorrect password.'
+            )
+            return redirect('accounts:login')
+        # check if user is active or not
         if user is not None:
             if user.is_active:
                 auth.login(self.request, user)
                 messages.success(self.request, 'You are logged in!)')
-                return redirect('marketplace:home_view')
+                return super().form_valid(form)
             else:
                 messages.error(
                     self.request,
@@ -57,6 +57,19 @@ class SignInView(LoginView):
             messages.error(self.request, 'Incorrect password.')
             return redirect('accounts:login')
         return redirect('accounts:login')
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        if next_url:
+            parsed_next_url = urlparse(next_url)
+            if next_url == '/payment/':
+                return '/cart/'
+            # Check if the next URL is a
+            #  relative path or belongs to the same host
+            if not parsed_next_url.netloc or \
+                    parsed_next_url.netloc == self.request.get_host():
+                return next_url
+        return reverse_lazy('marketplace:home_view')
 
 
 class LogoutView(LogoutView):
