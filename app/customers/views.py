@@ -10,6 +10,7 @@ from django.contrib.auth.views import PasswordChangeView
 
 from accounts.models import UserProfile
 from shop.models import Item
+from orders.models import Order
 from .forms import UserForm, UserProfileForm
 
 
@@ -115,4 +116,28 @@ class WishListView(LoginRequiredMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context['wish_list'] = self.request.user.wish_list.all()
         context['wish_count'] = self.request.user.wish_list.count()
+        return context
+
+
+class OrdersView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'customers/orders.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders'] = Order.objects.filter(user=self.request.user)
+        return context
+
+
+class OrderDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = 'customers/details_order.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['orderitems'] = self.get_object().items.all()
+        context['total'] = self.get_object().total_paid
         return context

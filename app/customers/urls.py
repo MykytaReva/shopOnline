@@ -18,4 +18,10 @@ urlpatterns = [
         name='change_password'
         ),
     path('wish-list/', views.WishListView.as_view(), name='wish_list'),
+    path('orders/', views.OrdersView.as_view(), name='orders'),
+    path(
+        'orders/details/<int:pk>/',
+        views.OrderDetailView.as_view(),
+        name='details_order'
+        ),
 ]

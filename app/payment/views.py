@@ -11,6 +11,7 @@ from django.views.generic import TemplateView
 from orders.views import payment_confirmation
 from cart.models import Cart
 from cart.cart import CookiesCart
+from orders.models import Order
 
 
 class CartView(LoginRequiredMixin, TemplateView):
@@ -33,11 +34,28 @@ class CartView(LoginRequiredMixin, TemplateView):
 
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        intent = stripe.PaymentIntent.create(
-            amount=total,
-            currency='gbp',
-            metadata={'userid': 2}
-        )
+        try:
+            intent = stripe.PaymentIntent.create(
+                amount=total,
+                currency='gbp',
+                metadata={'userid': 2}
+            )
+        except stripe.error.StripeError as e:
+            # Handle payment error
+            error_message = str(e)
+            return render(
+                request,
+                self.template_name,
+                {'error_message': error_message}
+            )
+        except stripe.error.CardError as e:
+            # Display error message to the user
+            err = e.error
+            return render(
+                request,
+                self.template_name,
+                {'error': err['message']}
+            )
 
         return render(
             request,
@@ -69,7 +87,15 @@ def stripe_webhook(request):
 
 
 def order_placed(request):
-    Cart.objects.filter(
-                user=request.user
-                ).delete()
-    return render(request, 'payment/orderplaced.html')
+    user = request.user
+    cart = Cart.objects.filter(user=user)
+    order = Order.objects.filter(user=user).first()
+    context = {
+        'user': user,
+        'order': order,
+        'orderitems': order.items.all(),
+        'total': order.total_paid
+
+    }
+    cart.delete()
+    return render(request, 'payment/orderplaced.html', context=context)

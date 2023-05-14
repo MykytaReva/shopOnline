@@ -22,7 +22,7 @@ class Order(models.Model):
 
     billing_status = models.BooleanField(default=False)
     order_key = models.CharField(max_length=200)
-    total_paid = models.DecimalField(max_digits=5, decimal_places=2)
+    total_paid = models.DecimalField(max_digits=7, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -45,7 +45,7 @@ class OrderItem(models.Model):
         related_name='order_items',
         on_delete=models.CASCADE
     )
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):

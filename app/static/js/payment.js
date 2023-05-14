@@ -47,8 +47,6 @@ form.addEventListener('submit', function(ev){
             action: 'post',
         },
         success: function (json) {
-            console.log(json.success)
-
             stripe.confirmCardPayment(clientsecret, {
                 payment_method: {
                     card: card,
@@ -68,7 +66,6 @@ form.addEventListener('submit', function(ev){
                     console.log(result.error.message)
                 } else {
                     if (result.paymentIntent.status == 'succeeded') {
-                        console.log('payment processed')
 
                         window.location.replace('http://127.0.0.1:8000/payment/orderplaced/');
                     }

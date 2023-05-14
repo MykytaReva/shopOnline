@@ -1,18 +1,19 @@
 from django.http.response import JsonResponse
 
-from cart.cart import CookiesCart
 from .models import Order, OrderItem
+from cart.models import Cart
 
 
 def add(request):
-    cart = CookiesCart(request)
-    cart_items = cart.get_items()
-    if request.POST.get('action') == 'post':
+    user = request.user
+    cart_items = Cart.objects.filter(user=user)
 
-        # user_id = request.user.id
-        user_id = 2
+    if request.POST.get('action') == 'post':
+        user_id = user.id
         order_key = request.POST.get('order_key')
-        carttotal = cart.get_total_price()
+        carttotal = sum(
+                [it.quantity*it.item.price for it in cart_items]
+                )
 
         # check if order already exists
         if not Order.objects.filter(order_key=order_key).exists():
@@ -35,9 +36,9 @@ def add(request):
             for item in cart_items:
                 OrderItem.objects.create(
                     order_id=order_id,
-                    item=item['item'],
-                    price=item['item'].price,
-                    quantity=item['quantity']
+                    item=item.item,
+                    price=item.item.price,
+                    quantity=item.quantity,
                 )
         response = JsonResponse({'success': 'Return something'})
         return response

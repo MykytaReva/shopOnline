@@ -81,7 +81,7 @@ class Item(models.Model):
         related_name='items',
         null=True
         )
-    price = models.DecimalField(max_digits=8, decimal_places=2)
+    price = models.DecimalField(max_digits=9, decimal_places=2)
     shop = models.ForeignKey(
         Shop,
         on_delete=models.CASCADE,

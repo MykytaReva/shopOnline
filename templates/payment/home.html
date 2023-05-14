@@ -13,7 +13,7 @@
           <!-- Error messages in this element -->
           <div id="card-errors" class="a" role="alert"></div>
           <form>
-            <div class="row g-3">
+            <div class="row">
               <div class="col-sm-6">
                 <label for="firstName" class="form-label">First Name</label>
                 <input type="text" class="form-control" id="firstName" placeholder="" required>
@@ -42,28 +42,22 @@
                 <input type="text" name="city" value="" maxlength="16" class="form-control form-control-lg" id="id_city">
               </div>
 
-              <div class="col-md-6 mb-4 pb-2">
+              <div class="col-md-6 mb-2 pb-2">
                 <label class="form-label" for="pin_code">Postal Code</label>
                 <input type="text" name="pin_code" value="" maxlength="15" class="form-control form-control-lg" id="id_pin_code">
               </div>
-              <div class="col-md-6 mb-4 pb-2">
+              <div class="col-md-6 mb-2 pb-2">
                 <label class="form-label" for="country  ">Country</label>
                 <input type="text" name="country" value="" maxlength="16" class="form-control form-control-lg" id="id_country">
             </div>
 
-            <hr class="my-4">
-            <h4 class="mb-3">Payment</h4>
+            <h4 class="mb-1">Payment</h4>
             <label for="card-element">Credit or debit card</label>
             <div id="card-element" class="form-control form-control-payment">
               <!-- Payment elements will appear here -->
             </div>
-            <hr class="my-4">
-            <h4 class="mb-3">Payment</h4>
-            <label for="card-element">Credit or debit card</label>
-            <div id='card-element' class="form-control form-control-payment">
 
-            </div>
-            <button id="submit" class="btn btn-primary w-100 fw-bold" data-secret="{{ client_secret }}">Pay</button>
+            <button id="submit" class="btn btn-primary w-100 fw-bold my-3" data-secret="{{ client_secret }}">Pay</button>
           </form>
 
 
