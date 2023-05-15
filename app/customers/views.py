@@ -73,7 +73,7 @@ class CustomerProfileView(LoginRequiredMixin, generic.UpdateView):
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         messages.error(self.request, form.errors)
-        return self.render(
+        return render(
             self.request,
             self.template_name,
             context=context

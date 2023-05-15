@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth import get_user_model
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Separate folder for each user
@@ -96,7 +97,8 @@ class UserProfile(models.Model):
         blank=True,
         null=True
         )
-    phone_number = models.CharField(max_length=14, blank=True)
+    phone_number = PhoneNumberField(max_length=14, blank=True)
+
     address = models.CharField(max_length=250, blank=True, null=True)
     country = models.CharField(max_length=16, blank=True, null=True)
     city = models.CharField(max_length=16, blank=True, null=True)

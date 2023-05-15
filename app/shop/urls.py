@@ -75,4 +75,14 @@ urlpatterns = [
         views.OrdersDetailView.as_view(),
         name='details_order'
         ),
+    path(
+        'customers/',
+        views.CustomersView.as_view(),
+        name='customers'
+        ),
+    path(
+        'customers/orders/<int:customer_id>/',
+        views.CustomerOrdersViews.as_view(),
+        name='customers_orders'
+        ),
 ]

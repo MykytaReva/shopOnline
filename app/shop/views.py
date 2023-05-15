@@ -6,6 +6,8 @@ from django.utils.text import slugify
 
 from django.contrib import messages
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from .forms import CategoryForm, ItemImageForm, ItemForm
 from .models import Category, Item, Shop
@@ -348,10 +350,13 @@ class OrdersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
         orders = Order.objects.filter(shops__in=[shop], billing_status=True)
 
         total_prices = []  # List to store the prices for each order
-
+        # list of orders
         for oit in orders:
+            # oit is a particular order
+            price_for_order = 0
             for it in oit.items.filter(item__shop=shop):
-                price_for_order = it.quantity * it.price
+                # it is a particular OrderItem
+                price_for_order += it.quantity * it.price
             total_prices.append(price_for_order)  # Add the price to the list
         # could be built-in zip()
         zipped_data = zip_longest(orders, total_prices, fillvalue=None)
@@ -360,7 +365,11 @@ class OrdersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
         return context
 
 
-class OrdersDetailView(LoginRequiredMixin, generic.DetailView):
+class OrdersDetailView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.DetailView
+        ):
     template_name = 'shop/details_order.html'
     context_object_name = 'orders'
 
@@ -378,4 +387,56 @@ class OrdersDetailView(LoginRequiredMixin, generic.DetailView):
                 )
         context['total'] = total
         context['orderitems'] = orderitems
+        return context
+
+
+class CustomersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
+    template_name = 'shop/customers.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
+        orders = Order.objects.filter(shops__in=[shop], billing_status=True)
+        customers = set()
+        for cust in orders:
+            customers.add(cust.user)
+
+        context['customers'] = customers
+        context['shop'] = shop
+        return context
+
+
+class CustomerOrdersViews(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.TemplateView
+        ):
+    template_name = 'shop/customer_orders.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
+        customer_id = self.kwargs['customer_id']
+        customer = get_object_or_404(get_user_model(), id=customer_id)
+        orders = Order.objects.filter(
+            shops=shop,
+            billing_status=True,
+            user=customer
+            )
+
+        total_prices = []  # List to store the prices for each order
+        # list of orders
+        for oit in orders:
+            # oit is a particular order
+            price_for_order = 0
+            for it in oit.items.filter(item__shop=shop):
+                # it is a particular OrderItem
+                price_for_order += it.quantity * it.price
+            total_prices.append(price_for_order)  # Add the price to the list
+        # could be built-in zip()
+        zipped_data = zip_longest(orders, total_prices, fillvalue=None)
+
+        context['zipped_data'] = zipped_data
+        context['customer'] = customer
+        context['orders'] = orders
         return context

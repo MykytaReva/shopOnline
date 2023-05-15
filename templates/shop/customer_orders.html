@@ -1,0 +1,41 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+  <div class="container-fluid">
+      <div class="row">
+      {% include 'includes/shop_sidebar.html' %}
+        <div class="col-md-9 text-center card py-2">
+            <h4 class="card-title text-center">{{customer.first_name}}'s Orders</h4>
+            {% if zipped_data %}
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th class="text-center" scope="col"></th>
+              <th class="text-center" scope="col">Date</th>
+              <th class="text-center" scope="col">Sum</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order, price in zipped_data %}
+            <tr>
+
+              <td class="text-center">{{ forloop.counter }}</td>
+              <td class="text-center"><a href="{% url 'shop:details_order' order.pk%}">{{ order.created_at|date:"F j, Y, g:i a" }}</a></td>
+              <td class="text-center">${{ price }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <h4 class="card-title text-center">You do not have any orders yet.</h4>
+        <div class="col text-center mt-3">
+          <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
+      </div>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

@@ -2,6 +2,7 @@ from django import forms
 from accounts.models import UserProfile
 from django.contrib.auth import get_user_model
 from django.forms.widgets import NumberInput
+from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
 
 class UserForm(forms.ModelForm):
@@ -36,6 +37,9 @@ class UserProfileForm(forms.ModelForm):
             'dob',
 
         ]
+        widgets = {                          # Here
+            'phone': PhoneNumberPrefixWidget(initial='PL'),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

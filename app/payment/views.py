@@ -10,7 +10,6 @@ from django.views.generic import TemplateView
 
 from orders.views import payment_confirmation
 from cart.models import Cart
-from cart.cart import CookiesCart
 from orders.models import Order
 
 
@@ -18,19 +17,13 @@ class CartView(LoginRequiredMixin, TemplateView):
     template_name = 'payment/home.html'
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            cart_items = Cart.objects.filter(
-                user=self.request.user
-                ).order_by('created_at')
-            total = sum(
-                [it.quantity*it.item.price for it in cart_items]
-                )
-            total = int(total * 100)
-        else:
-            cart = CookiesCart(self.request)
-            total = str(cart.get_total_price())
-            total = total.replace('.', '')
-            total = int(total)
+        cart_items = Cart.objects.filter(
+            user=self.request.user
+            ).order_by('created_at')
+        total = sum(
+            [it.quantity*it.item.price for it in cart_items]
+            )
+        total = int(total * 100)
 
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -60,7 +53,10 @@ class CartView(LoginRequiredMixin, TemplateView):
         return render(
             request,
             self.template_name,
-            {'client_secret': intent.client_secret}
+            {
+                'client_secret': intent.client_secret,
+                'total': total / 100,
+                }
         )
 
 
