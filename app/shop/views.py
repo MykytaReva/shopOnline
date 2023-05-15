@@ -9,6 +9,8 @@ from django.core.cache import cache
 
 from .forms import CategoryForm, ItemImageForm, ItemForm
 from .models import Category, Item, Shop
+from orders.models import Order
+from itertools import zip_longest
 
 
 class CheckShopMixin(UserPassesTestMixin):
@@ -335,3 +337,45 @@ class ItemDeleteView(LoginRequiredMixin, CheckShopMixin, generic.DeleteView):
         response = super().form_valid(form)
         messages.success(self.request, 'Item has been deleted.')
         return response
+
+
+class OrdersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
+    template_name = 'shop/orders.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
+        orders = Order.objects.filter(shops__in=[shop], billing_status=True)
+
+        total_prices = []  # List to store the prices for each order
+
+        for oit in orders:
+            for it in oit.items.filter(item__shop=shop):
+                price_for_order = it.quantity * it.price
+            total_prices.append(price_for_order)  # Add the price to the list
+        # could be built-in zip()
+        zipped_data = zip_longest(orders, total_prices, fillvalue=None)
+        context['zipped_data'] = zipped_data
+        context['shop'] = shop
+        return context
+
+
+class OrdersDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = 'shop/details_order.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        shop = Shop.objects.get(user=self.request.user)
+        return Order.objects.filter(shops__in=[shop], billing_status=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
+
+        orderitems = self.get_object().items.filter(item__shop=shop)
+        total = sum(
+                [it.quantity*it.price for it in orderitems]
+                )
+        context['total'] = total
+        context['orderitems'] = orderitems
+        return context

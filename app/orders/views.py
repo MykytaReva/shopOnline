@@ -1,4 +1,5 @@
 from django.http.response import JsonResponse
+from django.contrib import messages
 
 from .models import Order, OrderItem
 from cart.models import Cart
@@ -23,6 +24,7 @@ def add(request):
                 last_name='last_name',
                 phone_number='phone_number',
 
+
                 address='address',
                 country='country',
                 city='city',
@@ -32,15 +34,24 @@ def add(request):
                 total_paid=carttotal,
                 order_key=order_key
             )
+
             order_id = order.pk
+            added_shops = set()
             for item in cart_items:
+                shop = item.item.shop
+                if shop not in added_shops:
+                    order.shops.add(shop)
+                    added_shops.add(shop)
+
                 OrderItem.objects.create(
                     order_id=order_id,
                     item=item.item,
                     price=item.item.price,
                     quantity=item.quantity,
                 )
+
         response = JsonResponse({'success': 'Return something'})
+        messages.success(request, 'Order successfully placed!')
         return response
 
 

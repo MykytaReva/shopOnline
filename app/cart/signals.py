@@ -15,5 +15,8 @@ def transfer_session_cart_to_database_cart(sender, request, user, **kwargs):
                 user=user,
                 item_id=int(item_id),
                 )
+            if created:
+                cart_item.quantity = item_data['qty']
+                cart_item.save()
         # Clear session cart
         session_cart.clear()

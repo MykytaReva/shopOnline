@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from shop.models import Item
+from shop.models import Item, Shop
 
 
 class Order(models.Model):
@@ -10,6 +10,8 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name='order_user',
     )
+    shops = models.ManyToManyField(Shop, blank=True)
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=14, blank=True)

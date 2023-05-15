@@ -65,4 +65,14 @@ urlpatterns = [
         views.ItemDetailView.as_view(),
         name='detail_item'
         ),
+    path(
+        'orders/',
+        views.OrdersView.as_view(),
+        name='orders'
+        ),
+    path(
+        'orders/details/<int:pk>/',
+        views.OrdersDetailView.as_view(),
+        name='details_order'
+        ),
 ]
