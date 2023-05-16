@@ -1,7 +1,7 @@
 from django.http.response import JsonResponse
 from django.contrib import messages
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, ShopOrder
 from cart.models import Cart
 
 
@@ -35,20 +35,22 @@ def add(request):
                 order_key=order_key
             )
 
+            # create order items
             order_id = order.pk
-            added_shops = set()
             for item in cart_items:
                 shop = item.item.shop
-                if shop not in added_shops:
-                    order.shops.add(shop)
-                    added_shops.add(shop)
-
                 OrderItem.objects.create(
                     order_id=order_id,
                     item=item.item,
                     price=item.item.price,
                     quantity=item.quantity,
                 )
+                shop_order, created = ShopOrder.objects.get_or_create(
+                    shop=shop,
+                    order=order,
+                )
+                if not created:
+                    shop_order.save()
 
         response = JsonResponse({'success': 'Return something'})
         messages.success(request, 'Order successfully placed!')

@@ -21,7 +21,7 @@ function initAutoComplete(){
       if (!place.geometry){
           document.getElementById('id_address').placeholder = "Start typing...";
       }
-      
+
       addressComponents = place.address_components.reduce((obj, item) => { // assign value to addressComponents
         if (item.types[0] === 'country') {
           obj[item.types[0]] = item.short_name;
@@ -238,10 +238,10 @@ $(document).ready(function() {
       data: $(this).serialize(),
       success: function(response) {
         // show success/error message
-        Swal.fire({
-          icon: response.icon,
-          title: response.message,
-        });
+        // Swal.fire({
+        //   icon: response.icon,
+        //   title: response.message,
+        // });
         $('#add-cart-btn').attr('disabled', true);
         if ($('#fa-icon').hasClass('fa fa-cart-plus')) {
           $('#fa-icon').removeClass('fa fa-cart-plus').addClass('fa fa-shopping-cart');
@@ -286,10 +286,10 @@ $(document).ready(function() {
       data: $(this).serialize(),
       success: function(response) {
         // show success/error message
-        Swal.fire({
-          icon: response.icon,
-          title: response.message,
-        });
+        // Swal.fire({
+        //   icon: response.icon,
+        //   title: response.message,
+        // });
         // increment quantity
         var itemId = form.attr('id').split('-')[2];
         var quantityDiv = $('#qty-' + itemId);

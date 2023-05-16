@@ -11,8 +11,7 @@ from django.contrib.auth import get_user_model
 
 from .forms import CategoryForm, ItemImageForm, ItemForm
 from .models import Category, Item, Shop
-from orders.models import Order
-from itertools import zip_longest
+from orders.models import ShopOrder
 
 
 class CheckShopMixin(UserPassesTestMixin):
@@ -347,20 +346,12 @@ class OrdersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = Shop.objects.get(user=self.request.user)
-        orders = Order.objects.filter(shops__in=[shop], billing_status=True)
+        shop_orders = ShopOrder.objects.filter(
+            shop=shop,
+            order__billing_status=True
+        )
 
-        total_prices = []  # List to store the prices for each order
-        # list of orders
-        for oit in orders:
-            # oit is a particular order
-            price_for_order = 0
-            for it in oit.items.filter(item__shop=shop):
-                # it is a particular OrderItem
-                price_for_order += it.quantity * it.price
-            total_prices.append(price_for_order)  # Add the price to the list
-        # could be built-in zip()
-        zipped_data = zip_longest(orders, total_prices, fillvalue=None)
-        context['zipped_data'] = zipped_data
+        context['shop_orders'] = shop_orders
         context['shop'] = shop
         return context
 
@@ -371,21 +362,21 @@ class OrdersDetailView(
         generic.DetailView
         ):
     template_name = 'shop/details_order.html'
-    context_object_name = 'orders'
+    context_object_name = 'order'
 
     def get_queryset(self):
         shop = Shop.objects.get(user=self.request.user)
-        return Order.objects.filter(shops__in=[shop], billing_status=True)
+        shop_orders = ShopOrder.objects.filter(
+            shop=shop,
+            order__billing_status=True
+        )
+        return shop_orders
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = Shop.objects.get(user=self.request.user)
+        orderitems = self.get_object().order.items.filter(item__shop=shop)
 
-        orderitems = self.get_object().items.filter(item__shop=shop)
-        total = sum(
-                [it.quantity*it.price for it in orderitems]
-                )
-        context['total'] = total
         context['orderitems'] = orderitems
         return context
 
@@ -396,10 +387,15 @@ class CustomersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = Shop.objects.get(user=self.request.user)
-        orders = Order.objects.filter(shops__in=[shop], billing_status=True)
+        shop_orders = ShopOrder.objects.filter(
+            shop=shop,
+            order__billing_status=True
+        )
+
+        # orders = Order.objects.filter(shops__in=[shop], billing_status=True)
         customers = set()
-        for cust in orders:
-            customers.add(cust.user)
+        for cust in shop_orders:
+            customers.add(cust.order.user)
 
         context['customers'] = customers
         context['shop'] = shop
@@ -418,25 +414,13 @@ class CustomerOrdersViews(
         shop = Shop.objects.get(user=self.request.user)
         customer_id = self.kwargs['customer_id']
         customer = get_object_or_404(get_user_model(), id=customer_id)
-        orders = Order.objects.filter(
-            shops=shop,
-            billing_status=True,
-            user=customer
-            )
 
-        total_prices = []  # List to store the prices for each order
-        # list of orders
-        for oit in orders:
-            # oit is a particular order
-            price_for_order = 0
-            for it in oit.items.filter(item__shop=shop):
-                # it is a particular OrderItem
-                price_for_order += it.quantity * it.price
-            total_prices.append(price_for_order)  # Add the price to the list
-        # could be built-in zip()
-        zipped_data = zip_longest(orders, total_prices, fillvalue=None)
+        shop_orders = ShopOrder.objects.filter(
+            shop=shop,
+            order__billing_status=True,
+            order__user=customer
+        )
 
-        context['zipped_data'] = zipped_data
         context['customer'] = customer
-        context['orders'] = orders
+        context['shop_orders'] = shop_orders
         return context

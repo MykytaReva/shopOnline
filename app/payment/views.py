@@ -90,7 +90,7 @@ def order_placed(request):
         'user': user,
         'order': order,
         'orderitems': order.items.all(),
-        'total': order.total_paid
+        'total': order.total_paid,
 
     }
     cart.delete()

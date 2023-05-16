@@ -13,6 +13,7 @@
             <tr>
               <th class="text-center" scope="col"> </th>
               <th class="text-center" scope="col">Item</th>
+              <th class="text-center" scope="col">Customer</th>
               <th class="text-center" scope="col">Quantity</th>
               <th class="text-center" scope="col">Price</th>
             </tr>
@@ -27,6 +28,7 @@
               {% endwith %}
 
               <td class="text-center"><a href="{% url 'marketplace:item_details' item.item.slug %}">{{ item.item.name }}</a></td>
+              <td class="text-center"><a href="{% url 'shop:customers_orders' item.order.user.pk %}">{{ item.order.user.first_name }}</a></td>
               <td class="text-center">{{ item.quantity }}</td>
               <td class="text-center">${{ item.item.price }}</td>
             </tr>
@@ -34,7 +36,7 @@
           </tbody>
         </table>
         <div class='text-end'>
-            Total:  ${{total}}
+            Total:  ${{order.price}}
         </div>
       </div>
     </div>

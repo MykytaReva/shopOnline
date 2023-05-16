@@ -10,7 +10,6 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name='order_user',
     )
-    shops = models.ManyToManyField(Shop, blank=True)
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -51,4 +50,47 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.item.name) + \
+            '-'+str(self.item.shop) + \
+            '-'+str(self.order.order_key)[-8:-1]
+
+
+class ShopOrder(models.Model):
+    STATUS_CHOICES = (
+        ('new', 'New'),
+        ('in_process', 'In Process'),
+        ('sent', 'Sent'),
+    )
+
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    price = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        blank=True,
+        null=True
+        )
+
+    status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default='new'
+        )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('shop', 'order')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.shop.shop_name} - {self.order}"
+
+    def save(self, *args, **kwargs):
+        order_items = self.order.items.filter(item__shop=self.shop)
+        print(order_items)
+
+        price = sum(item.quantity * item.price for item in order_items)
+        self.price = price
+        super().save(*args, **kwargs)
