@@ -19,6 +19,7 @@
                         <thead>
                           <tr>
                             <th scope="col">Item</th>
+                            <th scope="col">Shop</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Price</th>
                             <th scope="col">Delete</th>
@@ -27,7 +28,8 @@
                         <tbody>
                           {% for cart_item in cart_items %}
                             <tr id='tr-{{cart_item.item.id}}'>
-                              <td>{{ cart_item.item.name }}</td>
+                              <td><a href="{% url 'marketplace:item_details' cart_item.item.slug %}">{{ cart_item.item.name }}</a></td>
+                              <td><a href="{% url 'marketplace:shop' cart_item.item.shop.slug %}">{{ cart_item.item.shop }}</a></td>
                               <td  class="d-flex gap-4 justify-content-center">
 
                                   <form id='subtract-cart-{{cart_item.item.pk}}' method="POST" action="{% url 'cart:subtract-from-cart' cart_item.item.pk %}">

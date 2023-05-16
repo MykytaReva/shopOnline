@@ -376,7 +376,6 @@ class OrdersDetailView(
         context = super().get_context_data(**kwargs)
         shop = Shop.objects.get(user=self.request.user)
         orderitems = self.get_object().order.items.filter(item__shop=shop)
-
         context['orderitems'] = orderitems
         return context
 

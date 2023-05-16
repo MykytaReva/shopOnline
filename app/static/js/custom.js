@@ -244,6 +244,10 @@ $(document).ready(function() {
         // });
         $('#add-cart-btn').attr('disabled', true);
         if ($('#fa-icon').hasClass('fa fa-cart-plus')) {
+          Swal.fire({
+            icon: response.icon,
+            title: response.message,
+          });
           $('#fa-icon').removeClass('fa fa-cart-plus').addClass('fa fa-shopping-cart');
       }
         // increment quantity
@@ -275,9 +279,6 @@ $(document).ready(function() {
   // submit form data using AJAX
   $("form[id^='subtract-cart']").on('submit', function(event) {
     event.preventDefault();
-
-    // disable submit button
-
     // send AJAX request
     var form = $(this);
     $.ajax({
@@ -285,11 +286,6 @@ $(document).ready(function() {
       type: 'POST',
       data: $(this).serialize(),
       success: function(response) {
-        // show success/error message
-        // Swal.fire({
-        //   icon: response.icon,
-        //   title: response.message,
-        // });
         // increment quantity
         var itemId = form.attr('id').split('-')[2];
         var quantityDiv = $('#qty-' + itemId);
@@ -307,6 +303,10 @@ $(document).ready(function() {
         price.text((parseFloat(sumprice)-parseFloat(item_price_sum)).toFixed(2));
         // delete item if quantity is 0
         if (quantity - 1 <= 0) {
+          Swal.fire({
+            icon: response.icon,
+            title: response.message,
+          });
           $('#tr-' + itemId).remove();
         }
         if ($('.table tbody tr').length == 0) {

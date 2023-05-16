@@ -7,13 +7,12 @@
       <div class="row">
       {% include 'includes/shop_sidebar.html' %}
           <div class="col-md-9 text-center card py-2">
-        <h4 class="card-title text-center">Shop's Orders</h4>
+        <h4 class="card-title text-center">Shop's Order</h4>
         <table class="table table-hover">
           <thead class="thead-dark">
             <tr>
               <th class="text-center" scope="col"> </th>
               <th class="text-center" scope="col">Item</th>
-              <th class="text-center" scope="col">Customer</th>
               <th class="text-center" scope="col">Quantity</th>
               <th class="text-center" scope="col">Price</th>
             </tr>
@@ -28,16 +27,52 @@
               {% endwith %}
 
               <td class="text-center"><a href="{% url 'marketplace:item_details' item.item.slug %}">{{ item.item.name }}</a></td>
-              <td class="text-center"><a href="{% url 'shop:customers_orders' item.order.user.pk %}">{{ item.order.user.first_name }}</a></td>
               <td class="text-center">{{ item.quantity }}</td>
               <td class="text-center">${{ item.item.price }}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        {% with ord=order.order %}
+
         <div class='text-end'>
             Total:  ${{order.price}}
         </div>
+        <hr>
+        <div class="row">
+          <div class="col-6">
+            Name: <a href="{% url 'shop:customers_orders' ord.user.pk %}">{{ ord.first_name }} {{ ord.last_name }}</a>
+          </div>
+          <div class="col-6">
+            Phone Number: {{ ord.phone_number }}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-6">
+            Country: {{ ord.country }}
+          </div>
+          <div class="col-6">
+            City: {{ ord.city }}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-12">
+            Address: {{ ord.address }}
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-6">
+            Zip Code: {{ ord.pin_code }}
+          </div>
+          <div class="col-6">
+            District: {{ ord.state }}
+          </div>
+        </div>
+
+        {% endwith %}
       </div>
     </div>
   </div>

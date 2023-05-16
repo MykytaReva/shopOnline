@@ -15,21 +15,30 @@ def add(request):
         carttotal = sum(
                 [it.quantity*it.item.price for it in cart_items]
                 )
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+        email_address = request.user.email
+        address = request.POST.get('address')
+        state = request.POST.get('state')
+        city = request.POST.get('city')
+        pin_code = request.POST.get('pin_code')
+        country = request.POST.get('country')
 
         # check if order already exists
         if not Order.objects.filter(order_key=order_key).exists():
             order = Order.objects.create(
                 user_id=user_id,
-                first_name='first_name',
-                last_name='last_name',
-                phone_number='phone_number',
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=phone_number,
 
 
-                address='address',
-                country='country',
-                city='city',
-                state='state',
-                pin_code='zip_code',
+                address=address,
+                country=country,
+                city=city,
+                state=state,
+                pin_code=pin_code,
 
                 total_paid=carttotal,
                 order_key=order_key

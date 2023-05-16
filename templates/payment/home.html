@@ -12,7 +12,7 @@
           <h3 class="my-3">Billing address</h3>
           <!-- Error messages in this element -->
           <div id="card-errors" class="a" role="alert"></div>
-          <form>
+          <form method="POST" action="{% url 'orders:add' %}">
             <div class="row">
               <div class="col-md-6 mb-2 pb-2">
                 <label for="firstName" class="form-label">First Name</label>
