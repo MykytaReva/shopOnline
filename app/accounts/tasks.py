@@ -7,6 +7,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 
 from .models import DailyLetter
+from orders.models import ShopOrder, Order
 
 
 @shared_task
@@ -73,3 +74,74 @@ def send_daily_newsletter():
     message.content_subtype = 'html'
 
     message.send()
+
+
+@shared_task
+def send_status_in_process(instance_pk):
+    shop = ShopOrder.objects.get(pk=instance_pk)
+    user = shop.order.user
+    to_email = user.email
+
+    email_template = 'emails/send_status_in_process.html'
+
+    subject = 'Order Status Changed'
+    message = render_to_string(email_template, {
+        'user': user,
+    })
+    mail = EmailMessage(subject, message, to=[to_email])
+    mail.content_subtype = 'html'
+    mail.send()
+
+
+@shared_task
+def send_status_sent(instance_pk):
+    shop = ShopOrder.objects.get(pk=instance_pk)
+    user = shop.order.user
+    to_email = user.email
+
+    email_template = 'emails/send_status_sent.html'
+
+    subject = 'Order Status Changed'
+    message = render_to_string(email_template, {
+        'user': user,
+    })
+    mail = EmailMessage(subject, message, to=[to_email])
+    mail.content_subtype = 'html'
+    mail.send()
+
+
+@shared_task
+def new_order_notification(order_pk):
+
+    order = Order.objects.get(pk=order_pk)
+    order_items = order.items.all()
+
+    to_emails = list(
+        {order_item.item.shop.user.email for order_item in order_items}
+        )
+
+    subject = 'New Order Notification'
+    body = 'Hello,you have a new order!'
+
+    message = EmailMessage(subject, body, to=to_emails)
+    message.content_subtype = 'html'
+
+    message.send()
+
+
+@shared_task
+def send_order_confirmation(order_pk):
+
+    order = Order.objects.get(pk=order_pk)
+    user = order.user
+    to_email = user.email
+
+    email_template = 'emails/order_confirmation.html'
+
+    subject = 'Your order information.'
+    message = render_to_string(email_template, {
+        'user': user,
+    })
+    mail = EmailMessage(subject, message, to=[to_email])
+    mail.content_subtype = 'html'
+    mail.send()

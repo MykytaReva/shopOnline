@@ -1,15 +1,17 @@
-from django.views import generic
+from django.views import generic, View
 from django.contrib.auth.views import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.utils.text import slugify
+from django.shortcuts import redirect
+
 
 from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
-from .forms import CategoryForm, ItemImageForm, ItemForm
+from .forms import CategoryForm, ItemImageForm, ItemForm, OrderStatusForm
 from .models import Category, Item, Shop
 from orders.models import ShopOrder
 
@@ -377,7 +379,24 @@ class OrdersDetailView(
         shop = Shop.objects.get(user=self.request.user)
         orderitems = self.get_object().order.items.filter(item__shop=shop)
         context['orderitems'] = orderitems
+        context['form'] = OrderStatusForm(instance=self.get_object())
         return context
+
+
+class UpdateOrderStatusView(View):
+    def post(self, request, *args, **kwargs):
+        order_pk = self.kwargs['pk']
+        form = OrderStatusForm(request.POST)
+        if form.is_valid():
+            status = form.cleaned_data['status']
+            print(form.cleaned_data)
+            order = ShopOrder.objects.get(pk=order_pk)
+            order.status = status
+            order.save()
+            messages.success(request, 'Order status updated successfully.')
+        else:
+            messages.error(request, 'Invalid form data. Please try again.')
+        return redirect('shop:orders')
 
 
 class CustomersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):

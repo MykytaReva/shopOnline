@@ -57,9 +57,9 @@ class OrderItem(models.Model):
 
 class ShopOrder(models.Model):
     STATUS_CHOICES = (
-        ('new', 'New'),
-        ('in_process', 'In Process'),
-        ('sent', 'Sent'),
+        ('New', 'New'),
+        ('In Process', 'In Process'),
+        ('Sent', 'Sent'),
     )
 
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
@@ -74,7 +74,7 @@ class ShopOrder(models.Model):
     status = models.CharField(
         max_length=50,
         choices=STATUS_CHOICES,
-        default='new'
+        default='New'
         )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -89,8 +89,6 @@ class ShopOrder(models.Model):
 
     def save(self, *args, **kwargs):
         order_items = self.order.items.filter(item__shop=self.shop)
-        print(order_items)
-
         price = sum(item.quantity * item.price for item in order_items)
         self.price = price
         super().save(*args, **kwargs)

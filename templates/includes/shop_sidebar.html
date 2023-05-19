@@ -6,7 +6,7 @@
     <a href="{% url 'shop:shop_settings' %}" class="list-group-item list-group-item-action {% if 'shop-settings' in request.path %}active{% endif %}">Shop's settings</a>
     <a href="{% url 'shop:list_category' %}" class="list-group-item list-group-item-action {% if 'list-category' in request.path or 'detail-category' in request.path or 'update-category' in request.path%}active{%endif%}">Categories</a>
     <a href="{% url 'shop:list_item' %}" class="list-group-item list-group-item-action {% if 'list-item' in request.path or 'update-item' in request.path or 'detail-item' in request.path%}active{%endif%}">Products</a>
-    <a href="{% url 'shop:orders' %}" class="list-group-item list-group-item-action {% if 'orders' in request.path or  'customers/orders' in request.path %}active{%endif%}">Orders</a>
+    <a href="{% url 'shop:orders' %}" class="list-group-item list-group-item-action {% if 'orders' in request.path or  'customers/orders' in request.path %}active{%endif%}">Orders <span class="badge bg-danger">{% if new_orders_count %}{{new_orders_count}}{% endif %}</span></a>
     <a href="{% url 'shop:customers' %}" class="list-group-item list-group-item-action {% if 'customers' in request.path and  'orders' not in request.path%}active{%endif%}">Customers</a>
     </div>
 </div>

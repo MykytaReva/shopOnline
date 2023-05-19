@@ -85,4 +85,10 @@ urlpatterns = [
         views.CustomerOrdersViews.as_view(),
         name='customers_orders'
         ),
+    path(
+        'orders/update-status/<int:pk>/',
+        views.UpdateOrderStatusView.as_view(),
+        name='update_order_status'
+    ),
+
 ]

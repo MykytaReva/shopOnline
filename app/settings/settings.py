@@ -79,6 +79,7 @@ TEMPLATES = [
                 'accounts.context_processors.daily_newsletter_form',
                 'accounts.context_processors.get_google_api',
                 'cart.context_processors.cart_counter',
+                'shop.context_processors.get_new_orders_count',
             ],
         },
     },

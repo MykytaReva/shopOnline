@@ -1,5 +1,6 @@
 from django import forms
 from .models import Shop, Category, Item, ItemImage
+from orders.models import ShopOrder
 
 
 class ShopForm(forms.ModelForm):
@@ -88,3 +89,16 @@ class ItemImageForm(forms.ModelForm):
             'autocomplete': 'off',
             })
         self.fields['image'].required = False
+
+
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = ShopOrder
+        fields = ['status',]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].widget.attrs.update({
+            'class': 'form-control form-control-lg',
+            'autocomplete': 'off',
+            })

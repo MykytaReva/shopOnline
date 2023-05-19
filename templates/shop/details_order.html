@@ -36,7 +36,24 @@
         {% with ord=order.order %}
 
         <div class='text-end'>
-            Total:  ${{order.price}}
+          Total: ${{ order.price }}
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-12">
+            <form class="row " method="POST" action="{% url 'shop:update_order_status' order.pk %}">
+              <div class="col-6">
+              {% csrf_token %}
+
+              {{ form }}
+              </div>
+              <div class="col-6">
+              <button class='btn btn-primary w-50 mt-4' type="submit">Update</button>
+              </div>
+          </form>
+          </div>
+
+
         </div>
         <hr>
         <div class="row">

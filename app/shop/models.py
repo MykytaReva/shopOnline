@@ -19,6 +19,7 @@ def item_photo(instance, filename):
 
 
 class Shop(models.Model):
+    # refactor to owner later
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,

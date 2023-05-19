@@ -3,6 +3,7 @@ from django.contrib import messages
 
 from .models import Order, OrderItem, ShopOrder
 from cart.models import Cart
+from accounts.tasks import new_order_notification, send_order_confirmation
 
 
 def add(request):
@@ -43,6 +44,10 @@ def add(request):
                 total_paid=carttotal,
                 order_key=order_key
             )
+            # email to all shops in the order
+            new_order_notification.delay(order.pk)
+            # email to the user
+            send_order_confirmation.delay(order.pk)
 
             # create order items
             order_id = order.pk

@@ -14,6 +14,7 @@
             <tr>
               <th class="text-center" scope="col"></th>
               <th class="text-center" scope="col">Date</th>
+              <th class="text-center" scope="col">Status</th>
               <th class="text-center" scope="col">Sum</th>
             </tr>
           </thead>
@@ -22,7 +23,10 @@
             <tr>
 
               <td class="text-center">{{ forloop.counter }}</td>
-              <td class="text-center"><a href="{% url 'shop:details_order' order.pk%}">{{ order.created_at|date:"F j, Y, g:i a" }}</a></td>
+              <td class="text-center">
+              <a href="{% url 'shop:details_order' order.pk %}">{{ order.created_at|date:"F j, Y, g:i a" }}</a>
+              </td>
+              <td class="text-center"><div {% if order.status == 'New' %}class="btn btn-danger"{% elif order.status == 'Sent' %}class="btn btn-success"{% elif order.status == 'In Process' %}class="btn btn-warning"{% endif %}>{{ order.status }}  </div></td>
               <td class="text-center">${{ order.price }}</td>
             </tr>
             {% endfor %}
