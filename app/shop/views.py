@@ -10,8 +10,15 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
-from .forms import CategoryForm, ItemImageForm, ItemForm, OrderStatusForm
+from .forms import (
+    CategoryForm,
+    ShopStatusForm,
+    ItemImageForm,
+    ItemForm,
+    OrderStatusForm
+)
 from .models import Category, Item, Shop
 from orders.models import ShopOrder
 
@@ -36,7 +43,7 @@ class ShopSettingsView(
         generic.UpdateView
         ):
     model = Shop
-    fields = ['shop_name', 'avatar']
+    fields = ['shop_name', 'avatar', 'cover_photo']
     template_name = 'shop/shop_settings.html'
     success_url = reverse_lazy('shop:shop_admin')
 
@@ -442,3 +449,61 @@ class CustomerOrdersViews(
         context['customer'] = customer
         context['shop_orders'] = shop_orders
         return context
+
+
+# check superuser add
+class SuperUserPanel(generic.TemplateView):
+    template_name = 'shop/new_shops.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shops = Shop.objects.all()
+
+        context['shops'] = shops
+        return context
+
+
+# check superuser add
+class ShopDetailAdminView(generic.DetailView):
+    template_name = 'shop/details_shop_admin.html'
+    model = Shop
+    context_object_name = 'shop'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if 'download-docs' in request.GET:
+            return self.download_docs()
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ShopStatusForm(instance=self.object)
+        return context
+
+    def download_docs(self):
+        shop = self.get_object()
+        file_contents = shop.docs.read()
+        response = HttpResponse(
+            file_contents,
+            content_type='application/octet-stream'
+        )
+        file_name = f'attachment; filename="{shop.shop_name}"'
+        response['Content-Disposition'] = file_name
+        return response
+
+
+class ShopApprovedView(View):
+    def post(self, request, *args, **kwargs):
+        shop_slug = self.kwargs['slug']
+        form = ShopStatusForm(request.POST)
+        if form.is_valid():
+            status = form.cleaned_data['is_approved']
+            shop = Shop.objects.get(slug=shop_slug)
+            shop.is_approved = status
+            shop.save()
+            messages.success(request, 'Shop status updated successfully.')
+        else:
+            messages.error(request, 'Invalid form data. Please try again.')
+        return redirect('shop:super_user_panel')

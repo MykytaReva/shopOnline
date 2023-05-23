@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 
 from .models import DailyLetter
 from orders.models import ShopOrder, Order
+from shop.models import Shop, Item
 
 
 @shared_task
@@ -22,7 +23,7 @@ def send_activation_email(user_pk):
     elif user.role == 2:
         email_template = 'emails/shop_activation_email.html'
 
-    current_site = 'localhost:8000'
+    current_site = '127.0.0.1:8000'
     mail_subject = mail_subject
     message = render_to_string(email_template, {
         'user': user,
@@ -139,6 +140,42 @@ def send_order_confirmation(order_pk):
     email_template = 'emails/order_confirmation.html'
 
     subject = 'Your order information.'
+    message = render_to_string(email_template, {
+        'user': user,
+    })
+    mail = EmailMessage(subject, message, to=[to_email])
+    mail.content_subtype = 'html'
+    mail.send()
+
+
+@shared_task
+def send_shop_is_confirmed_email(shop_pk):
+
+    shop = Shop.objects.get(pk=shop_pk)
+    user = shop.user
+    to_email = user.email
+
+    email_template = 'emails/shop_is_approved.html'
+
+    subject = 'Your shop is approved!'
+    message = render_to_string(email_template, {
+        'user': user,
+    })
+    mail = EmailMessage(subject, message, to=[to_email])
+    mail.content_subtype = 'html'
+    mail.send()
+
+
+@shared_task
+def send_item_is_confirmed_email(shop_pk):
+
+    item = Item.objects.get(pk=shop_pk)
+    user = item.shop.user
+    to_email = user.email
+
+    email_template = 'emails/shop_item_is_approved.html'
+
+    subject = 'Your Product has been approved!'
     message = render_to_string(email_template, {
         'user': user,
     })

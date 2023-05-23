@@ -12,7 +12,7 @@
                 <h1 style='margin-left: 77px;'><i class="fa-solid fa-shop"></i>{{shop.shop_name}}</h1>
             </div>
             <div class="col-6 text-center mt-3">
-                <img class='img-thumbnail' style='margin-left: 8rem !important; margin-top: 0.5rem;; height: 100px' src="{{shop.avatar.url}}" alt="asdfasdf ">
+                <img class='img-thumbnail' style='margin-left: 8rem !important; margin-top: 0.5rem;; height: 100px' src="{% if shop.avatar %}{{shop.avatar.url}}{% endif %}" alt="asdfasdf ">
 
             </div>
         </div>

@@ -102,3 +102,14 @@ class OrderStatusForm(forms.ModelForm):
             'class': 'form-control form-control-lg',
             'autocomplete': 'off',
             })
+
+
+class ShopStatusForm(forms.ModelForm):
+    is_approved = forms.ChoiceField(
+        choices=((True, 'Approved'), (False, 'Pending')),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    class Meta:
+        model = Shop
+        fields = ['is_approved',]

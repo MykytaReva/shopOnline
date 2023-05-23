@@ -4,9 +4,15 @@
         <div class="col-2 text-start" style="margin-top: 8px;">
             <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store fa-2xl d-inline-block"></i><h2 class='d-inline-block'>shopOnline</h2></a>
         </div>
-        <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
+        {% if request.user.is_superuser %}
+          <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
+            <h3><a class="text-white" href="{% url 'shop:super_user_panel' %}">Marketplace</a></h3>
+          </div>
+        {% else %}
+          <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
             <h3>Marketplace</h3>
-        </div>
+          </div>
+        {% endif %}
 
         <div class="col-5 text-end pe-2 fw-bolder"  style="margin-top: 8px;">
             {% if not request.user.is_authenticated %}

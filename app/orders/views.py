@@ -44,11 +44,6 @@ def add(request):
                 total_paid=carttotal,
                 order_key=order_key
             )
-            # email to all shops in the order
-            new_order_notification.delay(order.pk)
-            # email to the user
-            send_order_confirmation.delay(order.pk)
-
             # create order items
             order_id = order.pk
             for item in cart_items:
@@ -73,3 +68,8 @@ def add(request):
 
 def payment_confirmation(data):
     Order.objects.filter(order_key=data).update(billing_status=True)
+    order = Order.objects.get(order_key=data)
+    # email to all shops in the order
+    new_order_notification.delay(order.pk)
+    # email to the user
+    send_order_confirmation.delay(order.pk)

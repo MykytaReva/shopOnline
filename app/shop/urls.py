@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 app_name = 'shop'
 
 urlpatterns = [
@@ -89,6 +88,21 @@ urlpatterns = [
         'orders/update-status/<int:pk>/',
         views.UpdateOrderStatusView.as_view(),
         name='update_order_status'
+    ),
+    path(
+        '/shop_approved/<slug:slug>/',
+        views.ShopApprovedView.as_view(),
+        name='shop_approved'
+    ),
+    path(
+      'super-user-panel/',
+      views.SuperUserPanel.as_view(),
+      name='super_user_panel'
+    ),
+    path(
+      'super-user-panel/shop/<slug:slug>',
+      views.ShopDetailAdminView.as_view(),
+      name='super_user_panel_shop'
     ),
 
 ]

@@ -32,5 +32,4 @@ urlpatterns = [
       views.ResetPasswordView.as_view(),
       name='reset_password'
     ),
-
 ]
