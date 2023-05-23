@@ -1,0 +1,81 @@
+{% extends "includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+          <!-- Sidebar -->
+          <div class="list-group">
+          <a href="{% url 'shop:super_user_panel_shops' %}" class="list-group-item list-group-item-action">Shops{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+            {{new_shops}}</span>{%endif%}</a>
+          <a href="{% url 'shop:super_user_panel_shops_items' %}" class="list-group-item list-group-item-action">Items{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+            {{new_items}}</span>{%endif%}</a>
+          </div>
+      </div>
+        <div class="col-md-9 text-center card py-2">
+            <h4 class="card-title text-center">All shops</h4>
+            {% if shops %}
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th class="text-center" scope="col"></th>
+              <th class="text-center" scope="col">Name</th>
+              <th class="text-center" scope="col">Date</th>
+              <th class="text-center" scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for shp in shops %}
+            <tr>
+
+              <td class="text-center">{{ forloop.counter }}</td>
+              <td class="text-center">
+              <a href="{% url 'shop:super_user_detail_shop' shp.slug %}">{{ shp }}</a>
+              </td>
+              <td class="text-center">{{ shp.created_at|date:"F j, Y, g:i a" }}</td>
+              <td class="text-center">
+                {% if shp.is_approved %}
+                <div class="btn btn-success">Approved</div>
+                {% else %}
+                <div class="btn btn-danger">Pending</div>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% else %}
+        <h4 class="card-title text-center">You do not have any shops yet.</h4>
+        <div class="col text-center mt-3">
+          <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
+
+        {% endif %}
+        </div>
+        {% if is_paginated %}
+<div class="pagination justify-content-center mt-4">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}

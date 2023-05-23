@@ -5,29 +5,55 @@
 <div class='container mt-4'>
   <div class="container-fluid">
       <div class="row">
-      {% include 'includes/customer_sidebar.html' %}
-          <div class="col-md-9 text-center card py-2">
-        <h4 class="card-title text-center">Your Orders</h4>
-        {% if orders %}
+        <div class="col-md-3">
+          <!-- Sidebar -->
+          <div class="list-group">
+          <a href="{% url 'shop:super_user_panel_shops' %}" class="list-group-item list-group-item-action">Shops{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+            {{new_shops}}</span>{%endif%}</a>
+          <a href="#" class="list-group-item list-group-item-action">Items{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+            {{new_items}}</span>{%endif%}</a>
+          </div>
+      </div>
+        <div class="col-md-9 text-center card py-2">
+            <h4 class="card-title text-center">All Items</h4>
+            {% if items %}
         <table class="table table-hover">
           <thead class="thead-dark">
             <tr>
               <th class="text-center" scope="col"></th>
+              <th class="text-center" scope="col">Name</th>
               <th class="text-center" scope="col">Date</th>
-              <th class="text-center" scope="col">Sum</th>
+              <th class="text-center" scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
-            {% for order in orders %}
+            {% for item in items %}
             <tr>
 
               <td class="text-center">{{ forloop.counter }}</td>
-              <td class="text-center"><a href="{% url 'customers:details_order' order.pk%}">{{ order.created_at|date:"F j, Y, g:i a" }}</a></td>
-              <td class="text-center">${{ order.total_paid }}</td>
+              <td class="text-center">
+              <a href="{% url 'shop:super_user_detail_item' item.slug %}">{{ item }}</a>
+              </td>
+              <td class="text-center">{{ item.created_at|date:"F j, Y, g:i a" }}</td>
+              <td class="text-center">
+                {% if item.is_approved %}
+                <div class="btn btn-success">Approved</div>
+                {% else %}
+                <div class="btn btn-danger">Pending</div>
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        <h4 class="card-title text-center">You do not have any shops yet.</h4>
+        <div class="col text-center mt-3">
+          <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
+
+
+        </div>
+        {% endif %}
         {% if is_paginated %}
         <div class="pagination justify-content-center mt-4">
           <ul class="pagination">
@@ -48,12 +74,6 @@
             {% endif %}
           </ul>
         </div>
-        {% endif %}
-        {% else %}
-        <h4 class="card-title text-center">You do not have any orders yet.</h4>
-        <div class="col text-center mt-3">
-          <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
-      </div>
         {% endif %}
       </div>
     </div>

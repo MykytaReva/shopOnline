@@ -113,3 +113,14 @@ class ShopStatusForm(forms.ModelForm):
     class Meta:
         model = Shop
         fields = ['is_approved',]
+
+
+class ItemStatusForm(forms.ModelForm):
+    is_approved = forms.ChoiceField(
+        choices=((True, 'Approved'), (False, 'Pending')),
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    class Meta:
+        model = Item
+        fields = ['is_approved',]

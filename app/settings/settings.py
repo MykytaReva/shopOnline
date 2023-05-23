@@ -80,6 +80,7 @@ TEMPLATES = [
                 'accounts.context_processors.get_google_api',
                 'cart.context_processors.cart_counter',
                 'shop.context_processors.get_new_orders_count',
+                'shop.context_processors.get_not_approved_numbers',
             ],
         },
     },

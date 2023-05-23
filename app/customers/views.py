@@ -110,25 +110,31 @@ class ChangePasswordView(LoginRequiredMixin, PasswordChangeView):
 class WishListView(LoginRequiredMixin, generic.ListView):
     model = Item
     template_name = 'customers/wish_list.html'
-    context_object_name = 'items'
+    context_object_name = 'wish_list'
+    paginate_by = 4
+
+    def get_queryset(self):
+        queryset = self.request.user.wish_list.all()
+        return queryset
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['wish_list'] = self.request.user.wish_list.all()
         context['wish_count'] = self.request.user.wish_list.count()
+        context['items'] = Item.objects.all()
         return context
 
 
-class OrdersView(LoginRequiredMixin, generic.TemplateView):
+class OrdersView(LoginRequiredMixin, generic.ListView):
     template_name = 'customers/orders.html'
+    paginate_by = 10
+    context_object_name = 'orders'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['orders'] = Order.objects.filter(
+    def get_queryset(self):
+        queryset = Order.objects.filter(
             user=self.request.user,
             billing_status=True
         )
-        return context
+        return queryset
 
 
 class OrderDetailView(LoginRequiredMixin, generic.DetailView):

@@ -6,7 +6,9 @@
         </div>
         {% if request.user.is_superuser %}
           <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
-            <h3><a class="text-white" href="{% url 'shop:super_user_panel' %}">Marketplace</a></h3>
+            <h3><a class="text-white" href="{% url 'shop:super_user_panel_shops' %}">{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+              {{new_items}}</span>{%endif%}Marketplace{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+              {{new_shops}}</span>{%endif%}</a></h3>
           </div>
         {% else %}
           <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">

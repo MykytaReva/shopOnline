@@ -7,20 +7,26 @@ from django.shortcuts import redirect
 
 
 from django.contrib import messages
-from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 from .forms import (
     CategoryForm,
     ShopStatusForm,
     ItemImageForm,
     ItemForm,
-    OrderStatusForm
+    OrderStatusForm,
+    ItemStatusForm
 )
 from .models import Category, Item, Shop
 from orders.models import ShopOrder
+
+
+class CheckSuperMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 class CheckShopMixin(UserPassesTestMixin):
@@ -64,28 +70,30 @@ class ShopSettingsView(
         return super().form_valid(form)
 
 
-class ShopAdminView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
+class ShopAdminView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.TemplateView
+        ):
     template_name = 'shop/shop_admin_panel.html'
 
 
-class CategoryListView(LoginRequiredMixin, CheckStaffMixin, generic.ListView):
-    model = Category
-    template_name = 'shop/category/category_list.html'
+class CategoryListView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.ListView
+        ):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.filter(
+    template_name = 'shop/category/category_list.html'
+    paginate_by = 10
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        queryset = Category.objects.filter(
                 shop__user=self.request.user
             ).order_by('-id')
-        cache_key = 'amount_category'
-        amount_category = cache.get(cache_key)
-        if amount_category:
-            context['amount'] = amount_category
-        else:
-            amount_category = Category.objects.count()
-            context['amount'] = amount_category
-            cache.set(cache_key, amount_category)
-        return context
+
+        return queryset
 
 
 class CategoryDetailView(
@@ -95,13 +103,20 @@ class CategoryDetailView(
         ):
     queryset = Category.objects.all()
     template_name = 'shop/category/category_details.html'
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.object
-        context['items'] = Item.objects.filter(
-                category=category
-            ).order_by('-id')
+        items = Item.objects.filter(category=category).order_by('-id')
+
+        paginator = Paginator(items, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['items'] = page_obj
+        context['is_paginated'] = page_obj.has_other_pages()
+        context['page_obj'] = page_obj
         return context
 
 
@@ -188,13 +203,15 @@ class ItemListView(
         ):
     model = Item
     template_name = 'shop/item/item_list.html'
+    context_object_name = 'items'
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['items'] = Item.objects.filter(
+    def get_queryset(self):
+        queryset = Item.objects.filter(
             shop__user=self.request.user
         ).order_by('-id')
-        return context
+
+        return queryset
 
 
 class ItemDetailView(
@@ -278,7 +295,11 @@ class ItemCreateView(
         return self.render_to_response(context)
 
 
-class ItemUpdateView(LoginRequiredMixin, CheckShopMixin, generic.UpdateView):
+class ItemUpdateView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.UpdateView
+        ):
     model = Item
     form_class = ItemForm
     image_form_class = ItemImageForm
@@ -339,7 +360,11 @@ class ItemUpdateView(LoginRequiredMixin, CheckShopMixin, generic.UpdateView):
                 )
 
 
-class ItemDeleteView(LoginRequiredMixin, CheckShopMixin, generic.DeleteView):
+class ItemDeleteView(
+        LoginRequiredMixin,
+        CheckShopMixin,
+        generic.DeleteView
+        ):
     queryset = Item.objects.all()
     success_url = reverse_lazy('shop:list_item')
 
@@ -349,20 +374,23 @@ class ItemDeleteView(LoginRequiredMixin, CheckShopMixin, generic.DeleteView):
         return response
 
 
-class OrdersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
+class OrdersView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.ListView
+        ):
     template_name = 'shop/orders.html'
+    context_object_name = 'shop_orders'
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self):
         shop = Shop.objects.get(user=self.request.user)
-        shop_orders = ShopOrder.objects.filter(
+        queryset = ShopOrder.objects.filter(
             shop=shop,
             order__billing_status=True
         )
 
-        context['shop_orders'] = shop_orders
-        context['shop'] = shop
-        return context
+        return queryset
 
 
 class OrdersDetailView(
@@ -396,7 +424,6 @@ class UpdateOrderStatusView(View):
         form = OrderStatusForm(request.POST)
         if form.is_valid():
             status = form.cleaned_data['status']
-            print(form.cleaned_data)
             order = ShopOrder.objects.get(pk=order_pk)
             order.status = status
             order.save()
@@ -406,23 +433,30 @@ class UpdateOrderStatusView(View):
         return redirect('shop:orders')
 
 
-class CustomersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
+class CustomersView(
+        LoginRequiredMixin,
+        CheckStaffMixin,
+        generic.ListView
+        ):
     template_name = 'shop/customers.html'
+    paginate_by = 10
+    context_object_name = 'customers'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self):
         shop = Shop.objects.get(user=self.request.user)
         shop_orders = ShopOrder.objects.filter(
             shop=shop,
             order__billing_status=True
         )
-
-        # orders = Order.objects.filter(shops__in=[shop], billing_status=True)
-        customers = set()
+        queryset = set()
         for cust in shop_orders:
-            customers.add(cust.order.user)
+            queryset.add(cust.order.user)
 
-        context['customers'] = customers
+        return list(queryset)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
         context['shop'] = shop
         return context
 
@@ -430,42 +464,61 @@ class CustomersView(LoginRequiredMixin, CheckStaffMixin, generic.TemplateView):
 class CustomerOrdersViews(
         LoginRequiredMixin,
         CheckStaffMixin,
-        generic.TemplateView
+        generic.ListView
         ):
     template_name = 'shop/customer_orders.html'
+    paginate_by = 10
+    context_object_name = 'shop_orders'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self):
         shop = Shop.objects.get(user=self.request.user)
         customer_id = self.kwargs['customer_id']
         customer = get_object_or_404(get_user_model(), id=customer_id)
-
-        shop_orders = ShopOrder.objects.filter(
+        queryset = ShopOrder.objects.filter(
             shop=shop,
             order__billing_status=True,
             order__user=customer
         )
 
-        context['customer'] = customer
-        context['shop_orders'] = shop_orders
-        return context
-
-
-# check superuser add
-class SuperUserPanel(generic.TemplateView):
-    template_name = 'shop/new_shops.html'
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        shops = Shop.objects.all()
-
-        context['shops'] = shops
+        customer_id = self.kwargs['customer_id']
+        customer = get_object_or_404(get_user_model(), id=customer_id)
+        context['customer'] = customer
         return context
 
 
-# check superuser add
-class ShopDetailAdminView(generic.DetailView):
-    template_name = 'shop/details_shop_admin.html'
+class SuperUserPanelShops(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        generic.ListView
+        ):
+
+    template_name = 'shop/superuser/new_shops.html'
+    model = Shop
+    context_object_name = 'shops'
+    paginate_by = 10
+
+
+class SuperUserPanelItems(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        generic.ListView
+        ):
+    template_name = 'shop/superuser/new_items.html'
+    model = Item
+    context_object_name = 'items'
+    paginate_by = 10
+
+
+class ShopDetailAdminView(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        generic.DetailView,
+        ):
+    template_name = 'shop/superuser/new_shop_details.html'
     model = Shop
     context_object_name = 'shop'
 
@@ -494,7 +547,27 @@ class ShopDetailAdminView(generic.DetailView):
         return response
 
 
-class ShopApprovedView(View):
+class ItemDetailAdminView(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        generic.DetailView,
+        ):
+    template_name = 'shop/superuser/new_item_details.html'
+    model = Item
+    context_object_name = 'item'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ItemStatusForm(instance=self.object)
+        return context
+
+
+class ShopApprovedView(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        View,
+        ):
+
     def post(self, request, *args, **kwargs):
         shop_slug = self.kwargs['slug']
         form = ShopStatusForm(request.POST)
@@ -506,4 +579,24 @@ class ShopApprovedView(View):
             messages.success(request, 'Shop status updated successfully.')
         else:
             messages.error(request, 'Invalid form data. Please try again.')
-        return redirect('shop:super_user_panel')
+        return redirect('shop:super_user_panel_shops')
+
+
+class ItemApprovedView(
+        LoginRequiredMixin,
+        CheckSuperMixin,
+        View,
+        ):
+
+    def post(self, request, *args, **kwargs):
+        item_slug = self.kwargs['slug']
+        form = ItemStatusForm(request.POST)
+        if form.is_valid():
+            status = form.cleaned_data['is_approved']
+            item = Item.objects.get(slug=item_slug)
+            item.is_approved = status
+            item.save()
+            messages.success(request, 'Item status updated successfully.')
+        else:
+            messages.error(request, 'Invalid form data. Please try again.')
+        return redirect('shop:super_user_panel_shops_items')

@@ -90,19 +90,34 @@ urlpatterns = [
         name='update_order_status'
     ),
     path(
-        '/shop_approved/<slug:slug>/',
-        views.ShopApprovedView.as_view(),
-        name='shop_approved'
+      'super-user-panel/shops/',
+      views.SuperUserPanelShops.as_view(),
+      name='super_user_panel_shops'
     ),
     path(
-      'super-user-panel/',
-      views.SuperUserPanel.as_view(),
-      name='super_user_panel'
+      'super-user-panel/items/',
+      views.SuperUserPanelItems.as_view(),
+      name='super_user_panel_shops_items'
     ),
     path(
       'super-user-panel/shop/<slug:slug>',
       views.ShopDetailAdminView.as_view(),
-      name='super_user_panel_shop'
+      name='super_user_detail_shop'
+    ),
+    path(
+      'super-user-panel/item/<slug:slug>',
+      views.ItemDetailAdminView.as_view(),
+      name='super_user_detail_item'
+    ),
+    path(
+        'shop_approved/<slug:slug>/',
+        views.ShopApprovedView.as_view(),
+        name='shop_approved'
+    ),
+    path(
+        'item_approved/<slug:slug>/',
+        views.ItemApprovedView.as_view(),
+        name='item_approved'
     ),
 
 ]
