@@ -27,19 +27,25 @@ class ShopView(generic.ListView):
     def get_queryset(self):
         shop = Shop.objects.get(slug=self.kwargs['slug'])
         category_slug = self.kwargs.get('category_slug')
-        items = Item.objects.filter(shop=shop)
+        items = Item.objects.filter(shop=shop, is_approved=True)
         if category_slug:
             category = Category.objects.filter(
                 shop=shop, slug=category_slug
                 ).first()
             if category:
-                items = items.filter(category=category)
+                items = items.filter(category=category, is_approved=True)
+
         return items
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shop'] = Shop.objects.get(slug=self.kwargs['slug'])
-        context['categories'] = Category.objects.filter(shop=context['shop'])
+        cat = Category.objects.filter(shop=context['shop'])
+        categories = []
+        for i in cat:
+            if i.items.filter(is_approved=True).exists():
+                categories.append(i)
+        context['categories'] = categories
         category_slug = self.kwargs.get('category_slug')
         if category_slug:
             shop = Shop.objects.get(slug=self.kwargs['slug'])
@@ -65,16 +71,8 @@ class AddToWishListView(LoginRequiredMixin, View):
                 'icon': 'warning',
                 'item_id': item.id
                 })
-            # messages.warning(
-            #     self.request,
-            #     '"{}" has been removed from WishList.'.format(item.name)
-            # )
         else:
             item.wish_list.add(self.request.user)
-            # messages.success(
-            #     self.request,
-            #     '{} has been added to WishList'.format(item.name)
-            # )
             return JsonResponse({
                 'message':
                 '"{}" has been added to WishList.'.format(item.name),

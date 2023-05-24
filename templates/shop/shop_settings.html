@@ -9,12 +9,27 @@
         <div class="row">
         {% include 'includes/shop_sidebar.html' %}
         <div class="col-md-9 text-center">
+
             <!-- Page Content -->
             <h1>Welcome to your profile settings</h1>
             <hr>
-            <div class="card mt-3 py-3">
+            <div class="card my-3 pb-3">
 
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <div class='container mb-3'>
+                                {% comment %} <img id='blah2' src="{{object.cover_photo.url}}" alt="" style=" max-height: 146px"> {% endcomment %}
+                                <div id='blah2' class="page-section restaurant-detail-image-section text-light rounded-pill" style=" max-height: 146px; background:url({% if object.cover_photo %}{{ object.cover_photo.url }}{% endif %}) no-repeat scroll 0 0 / cover;">
+                                <div class="row" style="
+                                height: 148px;">
+                                    <div class="col-6 mt-3">
+                                        <h1 style='margin-left: 77px;'><i class="fa-solid fa-shop"></i>{{object.shop_name}}</h1>
+                                    </div>
+                                </div>
+
+                                </div>
+                        </div>
                     <form method="post" enctype='multipart/form-data'>
                         {% csrf_token %}
 
@@ -23,7 +38,6 @@
                         <div class="col-md-6 mb-4 pb-2">
                             <div class="form-outline">
                                 <label class="form-label" for='shop_name'>Shop's Name</label>
-                                {% comment %} <input type="text" name="shop_name" value="Best Shop Ever" maxlength="50" required="" id="id_shop_name"> {% endcomment %}
                                 {{ form.shop_name|attr:"class:form-control"}}
                             </div>
                             <div class="col-md-12 mt-3 mb-6 pb-4">
@@ -54,7 +68,7 @@
 
 
                     <button id='resButton' type="reset" class="btn btn-dark btn-lg btn-block">Reset</button>
-                    <button id='createButton' type='submit' class="btn btn-primary btn-lg btn-block">Create</button>
+                    <button id='createButton' type='submit' class="btn btn-primary btn-lg btn-block">Update</button>
                     </form>
                 </div>
 
@@ -67,9 +81,12 @@
 <script>
     // Get the relevant elements
     const id_image = document.querySelector('#id_avatar');
+    const id_image2 = document.querySelector('#id_cover_photo');
     const resButton = document.querySelector('#resButton');
     const previewImage = document.querySelector('#blah');
+    const previewImage2 = document.querySelector('#blah2');
     let originalImage = previewImage.src;
+    let originalImage2 = previewImage2.src;
 
     // Update the preview image when a file is selected
     id_image.addEventListener('change', function(event) {
@@ -78,11 +95,19 @@
         previewImage.src = URL.createObjectURL(file);
       }
     });
+    id_image2.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            previewImage2.src = URL.createObjectURL(file);
+            previewImage2.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+        }
+      });
 
     // Reset the form when the reset button is clicked
     resButton.addEventListener('click', function(event) {
       // Reset the image preview to the original image
       previewImage.src = originalImage;
+      previewImage2.src = originalImage;
       // Clear the file input field
       id_image.value = '';
     });

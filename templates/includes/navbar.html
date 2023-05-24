@@ -43,7 +43,7 @@
 
                 <button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenuButton" data-bs-toggle='dropdown' aria-expanded="false">
                     <img id='navav' src="{% if request.user.shop.avatar %}{{ request.user.shop.avatar.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" class='navav'>
-                    {{ request.user.shop.shop_name }}
+                    {{ request.user.shop.shop_name }}<span class="badge bg-danger" style='top: -10px'>{% if new_orders_count %}{{new_orders_count}}{% endif %}</span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-dark text-center" aria-labelledby="dropdownMenuButton">
                     <li><a href="{% url 'shop:shop_admin' %}" class="dropdown-item">Dashboard</a></li>
@@ -51,7 +51,7 @@
                     <a href="{% url 'shop:shop_settings' %}" class="dropdown-item">Shop's settings</a>
                     <li><a href="{% url 'shop:list_category' %}" class="dropdown-item">Categories</a></li>
                     <li><a href="{% url 'shop:list_item' %}" class="dropdown-item">Products</a></li>
-                    <li><a href="{% url 'shop:orders' %}" class="dropdown-item">Orders</a></li>
+                    <li><a href="{% url 'shop:orders' %}" class="dropdown-item">Orders<span class="badge bg-danger">{% if new_orders_count %}{{new_orders_count}}{% endif %}</span></a></li>
                     <li><a href="{% url 'shop:customers' %}" class="dropdown-item">Customers</a></li>
                     <li><a href="{% url 'accounts:logout' %}" class="dropdown-item">Logout</a></li>
                   </ul>

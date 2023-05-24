@@ -22,6 +22,8 @@
             <tr>
               <th class="text-center" scope="col"></th>
               <th class="text-center" scope="col">Name</th>
+              <th class="text-center" scope="col">Shop</th>
+              <th class="text-center" scope="col">Category</th>
               <th class="text-center" scope="col">Date</th>
               <th class="text-center" scope="col">Status</th>
             </tr>
@@ -34,6 +36,10 @@
               <td class="text-center">
               <a href="{% url 'shop:super_user_detail_item' item.slug %}">{{ item }}</a>
               </td>
+              <td class="text-center">
+                <a href="{% url 'shop:super_user_detail_shop' item.shop.slug %}">{{ item.shop }}</a>
+              </td>
+              <td class="text-center">{{ item.category }}</td>
               <td class="text-center">{{ item.created_at|date:"F j, Y, g:i a" }}</td>
               <td class="text-center">
                 {% if item.is_approved %}

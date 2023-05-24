@@ -77,13 +77,39 @@ class ShopAdminView(
         ):
     template_name = 'shop/shop_admin_panel.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        shop = Shop.objects.get(user=self.request.user)
+        orders = ShopOrder.objects.filter(
+            shop=shop,
+            order__billing_status=True
+        )
+        # list of ordered items for shop
+        # like this [<QuerySet [<OrderItem: Happy place-Book Land-3TjHeyX>,]
+        list_orderitems = [
+            order.order.items.filter(item__shop=shop) for order in orders
+            ]
+        # dct store item: amount sold
+        # {<Item: Happy place>: 3, <Item: Atlas shrugged>: 4,}
+        dct = {}
+        for qs in list_orderitems:
+            for item in qs:
+                if item.item in dct:
+                    dct[item.item] += item.quantity
+                else:
+                    dct[item.item] = item.quantity
+
+        context["total_revenue"] = sum([order.price for order in orders])
+        context["item_amount"] = dct.items()
+        context["orders"] = orders
+        return context
+
 
 class CategoryListView(
         LoginRequiredMixin,
         CheckStaffMixin,
         generic.ListView
         ):
-
     template_name = 'shop/category/category_list.html'
     paginate_by = 10
     context_object_name = 'categories'
@@ -500,6 +526,7 @@ class SuperUserPanelShops(
     model = Shop
     context_object_name = 'shops'
     paginate_by = 10
+    ordering = ['-created_at', ]
 
 
 class SuperUserPanelItems(
@@ -511,6 +538,7 @@ class SuperUserPanelItems(
     model = Item
     context_object_name = 'items'
     paginate_by = 10
+    ordering = ['-created_at', ]
 
 
 class ShopDetailAdminView(
