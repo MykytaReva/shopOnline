@@ -1,17 +1,21 @@
+import matplotlib
+import os
+from matplotlib import pyplot as plt
+
 from django.views import generic, View
 from django.contrib.auth.views import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.utils.text import slugify
-from django.shortcuts import redirect
-
-
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.core.paginator import Paginator
-
+from .models import Category, Item, Shop
+from orders.models import ShopOrder
+from django.db.models.functions import TruncMonth
+from calendar import month_name
 from .forms import (
     CategoryForm,
     ShopStatusForm,
@@ -20,8 +24,6 @@ from .forms import (
     OrderStatusForm,
     ItemStatusForm
 )
-from .models import Category, Item, Shop
-from orders.models import ShopOrder
 
 
 class CheckSuperMixin(UserPassesTestMixin):
@@ -80,10 +82,19 @@ class ShopAdminView(
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         shop = Shop.objects.get(user=self.request.user)
-        orders = ShopOrder.objects.filter(
-            shop=shop,
-            order__billing_status=True
-        )
+        print(self.request.GET.get('month'))
+        selected_month = self.request.GET.get('month')
+        if selected_month:
+            orders = ShopOrder.objects.filter(
+                shop=shop,
+                order__billing_status=True,
+                created_at__month=selected_month
+            ).annotate(month=TruncMonth('order__created_at'))
+        else:
+            orders = ShopOrder.objects.filter(
+                shop=shop,
+                order__billing_status=True,
+            )
         # list of ordered items for shop
         # like this [<QuerySet [<OrderItem: Happy place-Book Land-3TjHeyX>,]
         list_orderitems = [
@@ -98,11 +109,63 @@ class ShopAdminView(
                     dct[item.item] += item.quantity
                 else:
                     dct[item.item] = item.quantity
-
+        self.make_bars(dct, shop)
         context["total_revenue"] = sum([order.price for order in orders])
         context["item_amount"] = dct.items()
         context["orders"] = orders
+        context["shop"] = shop
+
+        # Pass all 12 months to the template
+        months = [(str(month), month_name[month]) for month in range(1, 13)]
+        context["months"] = months
+        context["selected_month"] = selected_month
+
+        num_bars = len(dct)
+        num_pages = (num_bars - 1) // 5 + 1
+        page_range = range(1, num_pages + 1)
+        context["page_range"] = page_range
+        context["num_pages"] = num_pages
+
         return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    def make_bars(self, dct, shop):
+        matplotlib.use('Agg')
+        objects = [i for i, value in enumerate(dct.values(), start=1)]
+
+        qty = dct.values()
+
+        num_bars = len(objects)
+        num_pages = (num_bars - 1) // 4 + 1
+
+        for page in range(num_pages):
+            start_idx = page * 4
+            end_idx = min((page + 1) * 4, num_bars)
+            objects_page = list(objects)[start_idx:end_idx]
+            qty_page = list(qty)[start_idx:end_idx]
+
+            plt.figure()  # Create a new figure
+
+            y_pos = range(len(objects_page))
+            plt.bar(y_pos, qty_page, align='center', alpha=0.5)
+            plt.xticks(y_pos, objects_page)
+            plt.ylabel('Quantity')
+            plt.title('Sales')
+
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            parent_dir = os.path.dirname(os.path.dirname(current_dir))
+
+            folder_path = f'{parent_dir}/media/bars/{shop.id}'
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Generate a unique filename
+            filename = f'barchart_{shop.id}_page{page+1}.png'
+            file_path = os.path.join(folder_path, filename)
+
+            plt.savefig(file_path)
 
 
 class CategoryListView(
