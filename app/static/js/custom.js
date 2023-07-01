@@ -1,7 +1,7 @@
 let autocomplete;
 let addressComponents = {}; // declare addressComponents in a global scope
 
-
+// i do not believe that it is this one
 function initAutoComplete(){
   autocomplete = new google.maps.places.Autocomplete(
       document.getElementById('id_address'),

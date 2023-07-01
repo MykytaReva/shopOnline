@@ -12,7 +12,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# LOGIN_REDIRECT_URL = 'marketplace:home_view'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,7 +24,7 @@ INSTALLED_APPS = [
     # additional django
     'django_extensions',
     'django_celery_beat',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'cities_light',
     'ajax_select',
     'widget_tweaks',
@@ -48,8 +47,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # debug
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    # # debug
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 ROOT_URLCONF = 'settings.urls'
@@ -100,22 +99,6 @@ DATABASES = {
     }
 }
 
-#debug config
-DEBUG_TOOLBAR_PANELS = [
-    'debug_toolbar.panels.history.HistoryPanel',
-    'debug_toolbar.panels.versions.VersionsPanel',
-    'debug_toolbar.panels.timer.TimerPanel',
-    'debug_toolbar.panels.settings.SettingsPanel',
-    'debug_toolbar.panels.headers.HeadersPanel',
-    'debug_toolbar.panels.request.RequestPanel',
-    'debug_toolbar.panels.sql.SQLPanel',
-    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-    'debug_toolbar.panels.templates.TemplatesPanel',
-    'debug_toolbar.panels.cache.CachePanel',
-    'debug_toolbar.panels.signals.SignalsPanel',
-    'debug_toolbar.panels.redirects.RedirectsPanel',
-    'debug_toolbar.panels.profiling.ProfilingPanel',
-]
 INTERNAL_IPS = [
     # ...
     "127.0.0.1",
@@ -166,8 +149,13 @@ USE_TZ = True
 
 # static files
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR /'assets'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATIC_ROOT = BASE_DIR /'static/assets'
+STATIC_ROOT = os.path.join(BASE_DIR.parent, "static/")
+# PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+# STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATICFILES_DIRS = ( os.path.join(BASE_DIR,'static/'),)
+
+
 
 # media files
 MEDIA_URL = "media/"

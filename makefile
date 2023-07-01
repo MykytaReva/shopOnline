@@ -25,5 +25,8 @@ celery:
 celery_beat:
 	cd app && celery -A settings beat --loglevel=INFO
 
-make stripe:
+stripe:
 	stripe listen --forward-to localhost:8000/payment/webhook/
+
+gun:
+	cd app && gunicorn settings.wsgi:application -c div.py

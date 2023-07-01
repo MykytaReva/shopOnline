@@ -1,28 +1,29 @@
 {% load static %}
 <nav class='container bg-primary text-white rounded-pill'>
     <div class="row mb-2 py-2 px-2">
-        <div class="col-2 text-start" style="margin-top: 8px;">
-            <a class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store fa-2xl d-inline-block"></i><h2 class='d-inline-block'>shopOnline</h2></a>
+        <div class="col-2 text-start mt8" >
+            <a
+             class="navbar-brand" href="{% url 'marketplace:home_view' %}"><i class="fa-solid fa-store fa-2xl d-inline-block"></i><h2 class='d-inline-block'>shopOnline</h2></a>
         </div>
         {% if request.user.is_superuser %}
-          <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
-            <h3><a class="text-white" href="{% url 'shop:super_user_panel_shops' %}">{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
-              {{new_items}}</span>{%endif%}Marketplace{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+          <div class="col-5 text-end fw-bolder msr">
+            <h3><a class="text-white" href="{% url 'shop:super_user_panel_shops' %}">{% if new_items %}<span class="badge bg-warning bgg" id='cart_counter'>
+              {{new_items}}</span>{%endif%}Marketplace{% if new_shops %}<span class="badge bg-danger bgg" id='cart_counter'>
               {{new_shops}}</span>{%endif%}</a></h3>
           </div>
         {% else %}
-          <div class="col-5 text-end fw-bolder" style="margin-top: 13px;">
+          <div class="col-5 text-end fw-bolder mt13" >
             <h3>Marketplace</h3>
           </div>
         {% endif %}
 
-        <div class="col-5 text-end pe-2 fw-bolder"  style="margin-top: 8px;">
+        <div class="col-5 text-end pe-2 fw-bolder mt8">
             {% if not request.user.is_authenticated %}
             <div class='text-light'>Hello, Visitor!</div>
             <a class='text-light text-decoration-none' href="{% url 'cart:cart' %}">
 
-              <i class="fa fa-shopping-cart" style='font-size: 20px'></i>
-                  <span id='cart-c' class="badge badge-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: -5px;'>
+              <i class="fa fa-shopping-cart fs20"></i>
+                  <span id='cart-c' class="badge badge-warning nng" id='cart_counter'>
                     {{cart_count}}
                   </span>
             </a>
@@ -32,8 +33,8 @@
 
             {% else %}
             <a class='text-light text-decoration-none' href="{% url 'cart:cart' %}">
-              <i class="fa fa-shopping-cart" style='font-size: 20px'></i>
-                  <span id='cart-c' class="badge badge-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: -5px;'>
+              <i class="fa fa-shopping-cart fs20"></i>
+                  <span id='cart-c' class="badge badge-warning" id='cart_counter nng'>
                     {{cart_count}}</span>
             </a>
 
@@ -43,7 +44,7 @@
 
                 <button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenuButton" data-bs-toggle='dropdown' aria-expanded="false">
                     <img id='navav' src="{% if request.user.shop.avatar %}{{ request.user.shop.avatar.url }}{% else %}{% static 'anonymous.png' %}{% endif %}" class='navav'>
-                    {{ request.user.shop.shop_name }}<span class="badge bg-danger" style='top: -10px'>{% if new_orders_count %}{{new_orders_count}}{% endif %}</span>
+                    {{ request.user.shop.shop_name }}<span class="badge bg-danger tp10">{% if new_orders_count %}{{new_orders_count}}{% endif %}</span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-dark text-center" aria-labelledby="dropdownMenuButton">
                     <li><a href="{% url 'shop:shop_admin' %}" class="dropdown-item">Dashboard</a></li>
