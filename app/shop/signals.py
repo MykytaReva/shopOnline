@@ -1,8 +1,9 @@
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-
-from .models import Shop, Item
 from orders.models import ShopOrder
+
+from .models import Item, Shop
+
 # from accounts.tasks import (
 #     send_status_in_process,
 #     send_status_sent,
@@ -19,12 +20,12 @@ def post_save_status_update(sender, instance, **kwargs):
         new_status = instance.status
 
         if new_status != old_status:
-            if new_status == 'In Process':
+            if new_status == "In Process":
                 # send_status_in_process.delay(instance.pk)
-                print('send_status_in_process.delay()')
-            elif new_status == 'Sent':
+                print("send_status_in_process.delay()")
+            elif new_status == "Sent":
                 # send_status_sent.delay(instance.pk)
-                print('send_status_sent.delay()')
+                print("send_status_sent.delay()")
     except:
         pass
 
@@ -39,7 +40,7 @@ def pre_save_create_profile_receiver(sender, instance, **kwargs):
         if new_status != old_status:
             if new_status:
                 # send_shop_is_confirmed_email.delay(instance.pk)
-                print('send_shop_is_confirmed_email.delay(instance.pk)')
+                print("send_shop_is_confirmed_email.delay(instance.pk)")
     except:
         pass
 
@@ -53,7 +54,7 @@ def pre_save_create_item_receiver(sender, instance, **kwargs):
 
         if new_status != old_status:
             if new_status:
-                print('send_item_is_confirmed_email.delay(instance.pk)')
+                print("send_item_is_confirmed_email.delay(instance.pk)")
                 # send_item_is_confirmed_email.delay(instance.pk)
     except:
         pass

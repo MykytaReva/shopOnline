@@ -1,30 +1,28 @@
-from django.http.response import JsonResponse
+from accounts.tasks import new_order_notification, send_order_confirmation
+from cart.models import Cart
 from django.contrib import messages
+from django.http.response import JsonResponse
 
 from .models import Order, OrderItem, ShopOrder
-from cart.models import Cart
-from accounts.tasks import new_order_notification, send_order_confirmation
 
 
 def add(request):
     user = request.user
     cart_items = Cart.objects.filter(user=user)
 
-    if request.POST.get('action') == 'post':
+    if request.POST.get("action") == "post":
         user_id = user.id
-        order_key = request.POST.get('order_key')
-        carttotal = sum(
-                [it.quantity*it.item.price for it in cart_items]
-                )
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        phone_number = request.POST.get('phone_number')
+        order_key = request.POST.get("order_key")
+        carttotal = sum([it.quantity * it.item.price for it in cart_items])
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        phone_number = request.POST.get("phone_number")
         email_address = request.user.email
-        address = request.POST.get('address')
-        state = request.POST.get('state')
-        city = request.POST.get('city')
-        pin_code = request.POST.get('pin_code')
-        country = request.POST.get('country')
+        address = request.POST.get("address")
+        state = request.POST.get("state")
+        city = request.POST.get("city")
+        pin_code = request.POST.get("pin_code")
+        country = request.POST.get("country")
 
         # check if order already exists
         if not Order.objects.filter(order_key=order_key).exists():
@@ -33,16 +31,13 @@ def add(request):
                 first_name=first_name,
                 last_name=last_name,
                 phone_number=phone_number,
-
-
                 address=address,
                 country=country,
                 city=city,
                 state=state,
                 pin_code=pin_code,
-
                 total_paid=carttotal,
-                order_key=order_key
+                order_key=order_key,
             )
             # create order items
             order_id = order.pk
@@ -61,8 +56,8 @@ def add(request):
                 if not created:
                     shop_order.save()
 
-        response = JsonResponse({'success': 'Return something'})
-        messages.success(request, 'Order successfully placed!')
+        response = JsonResponse({"success": "Return something"})
+        messages.success(request, "Order successfully placed!")
         return response
 
 

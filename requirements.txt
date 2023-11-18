@@ -13,7 +13,7 @@ python-memcached==1.59
 flake8==6.0.0
 
 #postgresql
-psycopg2==2.9.5
+psycopg2-binary
 
 #celery
 celery==5.2.7
@@ -21,3 +21,12 @@ django-celery-beat==2.5.0
 
 #payment
 stripe==5.4.0
+
+#other
+django-cities-light
+django-ajax-selects
+django-phonenumber-field
+django-phonenumbers
+matplotlib
+babel
+pre-commit

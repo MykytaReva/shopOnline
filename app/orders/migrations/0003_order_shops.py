@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shop', '0005_alter_item_price'),
-        ('orders', '0002_alter_order_total_paid_alter_orderitem_price'),
+        ("shop", "0005_alter_item_price"),
+        ("orders", "0002_alter_order_total_paid_alter_orderitem_price"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='shops',
-            field=models.ManyToManyField(blank=True, to='shop.shop'),
+            model_name="order",
+            name="shops",
+            field=models.ManyToManyField(blank=True, to="shop.shop"),
         ),
     ]

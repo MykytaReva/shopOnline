@@ -1,6 +1,7 @@
-from .models import Cart
-from .cart import CookiesCart
 from shop.models import Item
+
+from .cart import CookiesCart
+from .models import Cart
 
 
 def cart_counter(request):
@@ -14,10 +15,12 @@ def cart_counter(request):
         cart_items = []
         for item_id, item_data in cart.cart.items():
             item = Item.objects.get(pk=item_id)
-            qty = item_data.get('qty')
-            cart_items.append({
-                'item': item,
-                'quantity': qty,
-            })
+            qty = item_data.get("qty")
+            cart_items.append(
+                {
+                    "item": item,
+                    "quantity": qty,
+                }
+            )
         cart_count = len(cart_items)
-    return {'cart_count': cart_count}
+    return {"cart_count": cart_count}

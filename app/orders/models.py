@@ -1,6 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-
+from django.db import models
 from shop.models import Item, Shop
 
 
@@ -8,7 +7,7 @@ class Order(models.Model):
     user = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
-        related_name='order_user',
+        related_name="order_user",
     )
 
     first_name = models.CharField(max_length=50)
@@ -29,60 +28,41 @@ class Order(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ('-created_at',)
+        ordering = ("-created_at",)
 
     def __str__(self):
         return str(self.created_at)
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(
-        Order,
-        related_name='items',
-        on_delete=models.CASCADE
-    )
-    item = models.ForeignKey(
-        Item,
-        related_name='order_items',
-        on_delete=models.CASCADE
-    )
+    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, related_name="order_items", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.item.name) + \
-            '-'+str(self.item.shop) + \
-            '-'+str(self.order.order_key)[-8:-1]
+        return str(self.item.name) + "-" + str(self.item.shop) + "-" + str(self.order.order_key)[-8:-1]
 
 
 class ShopOrder(models.Model):
     STATUS_CHOICES = (
-        ('New', 'New'),
-        ('In Process', 'In Process'),
-        ('Sent', 'Sent'),
+        ("New", "New"),
+        ("In Process", "In Process"),
+        ("Sent", "Sent"),
     )
 
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    price = models.DecimalField(
-        max_digits=7,
-        decimal_places=2,
-        blank=True,
-        null=True
-        )
+    price = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
 
-    status = models.CharField(
-        max_length=50,
-        choices=STATUS_CHOICES,
-        default='New'
-        )
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="New")
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('shop', 'order')
-        ordering = ('-created_at',)
+        unique_together = ("shop", "order")
+        ordering = ("-created_at",)
 
     def __str__(self):
         return f"{self.shop.shop_name} - {self.order}"

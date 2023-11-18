@@ -1,39 +1,34 @@
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Separate folder for each user
 def user_avatar(instance, filename):
-    return 'avatar/{0}/{1}'.format(instance.user.id, filename)
+    return "avatar/{0}/{1}".format(instance.user.id, filename)
 
 
 class UserManager(BaseUserManager):
     # Custom User Manager
-    def create_user(
-        self, first_name, last_name, username, email, role=None, password=None
-                    ):
+    def create_user(self, first_name, last_name, username, email, role=None, password=None):
         if not email:
-            raise ValueError('User must have an email address.')
+            raise ValueError("User must have an email address.")
         if not username:
-            raise ValueError('User must have an username.')
+            raise ValueError("User must have an username.")
 
         user = self.model(
             email=self.normalize_email(email),
             username=username,
             first_name=first_name,
             last_name=last_name,
-            role=role
+            role=role,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self, first_name, last_name, username, email, password=None
-                        ):
+    def create_superuser(self, first_name, last_name, username, email, password=None):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
@@ -54,18 +49,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     CUSTOMER = 1
 
     ROLE_CHOICE = (
-        (SHOP, 'Shop'),
-        (CUSTOMER, 'Customer'),
+        (SHOP, "Shop"),
+        (CUSTOMER, "Customer"),
     )
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=100, unique=True)
-    role = models.PositiveSmallIntegerField(
-        choices=ROLE_CHOICE,
-        blank=True,
-        null=True
-    )
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True)
 
     # Required fields
     created_date = models.DateTimeField(auto_now_add=True)
@@ -77,8 +68,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     objects = UserManager()
 
@@ -87,16 +78,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(
-        get_user_model(),
-        on_delete=models.CASCADE,
-        blank=True
-        )
-    profile_picture = models.ImageField(
-        upload_to=user_avatar,
-        blank=True,
-        null=True
-        )
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=True)
+    profile_picture = models.ImageField(upload_to=user_avatar, blank=True, null=True)
     phone_number = PhoneNumberField(max_length=14, blank=True)
 
     address = models.CharField(max_length=250, blank=True, null=True)

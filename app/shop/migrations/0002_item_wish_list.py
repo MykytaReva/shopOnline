@@ -8,13 +8,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('shop', '0001_initial'),
+        ("shop", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='item',
-            name='wish_list',
-            field=models.ManyToManyField(blank=True, related_name='wish_list', to=settings.AUTH_USER_MODEL),
+            model_name="item",
+            name="wish_list",
+            field=models.ManyToManyField(blank=True, related_name="wish_list", to=settings.AUTH_USER_MODEL),
         ),
     ]
