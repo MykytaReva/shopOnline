@@ -4,7 +4,7 @@ services:
   shoponline_service:
     depends_on:
       - db_postgres
-    image: mykytareva/shop-online:0.0.1
+    image: mykytareva/shop-online:0.0.2
     hostname: shoponline_service
     container_name: shoponline_service
     ports:

@@ -11,7 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 
-ALLOWED_HOSTS = ["nsrevas.bio", "localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["nsrevas.bio", "138.68.82.89"]
+# ALLOWED_HOSTS = ["nsrevas.bio", "localhost", "127.0.0.1", "0.0.0.0"]
 
 ADMIN_ENABLED = False
 
