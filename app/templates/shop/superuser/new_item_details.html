@@ -1,0 +1,110 @@
+{% extends "includes/../../includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar -->
+            <div class="list-group">
+            <a href="{% url 'shop:super_user_panel_shops' %}" class="list-group-item list-group-item-action">Shops{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+                {{new_shops}}</span>{%endif%}</a>
+            <a href="#" class="list-group-item list-group-item-action">Items{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+                {{new_items}}</span>{%endif%}</a>
+            </div>
+        </div>
+            <div class="col-md-9 text-center card py-2">
+                <h4 class="card-title text-center">Item's Details</h4>
+                <div class="row">
+                    <div class="col-5">
+                        {% with last_image=object.itemimage.latest %}
+                            <img class='ml-2 mt-4 img-thumbnail'id='blah' height='125' src="{{ last_image.image.url }}" alt="{{ item.title }}">
+                        {% endwith %}
+                    </div>
+                    <div class="col-7">
+                        <div class="row mb-2 mt-4">
+                            <div class="col-5">
+                                Name:
+                                <hr>
+                            </div>
+                            <div class="col-7">
+                                {{ item }}
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Title:
+                                <hr>
+                            </div>
+                            <div class="col-7">
+                                {{item.title}}
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Category:
+                                <hr>
+                            </div>
+                            <div class="col-7">
+                                {{item.category.name}}
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Shop:
+                                <hr>
+                            </div>
+                            <div class="col-7">
+                                {{item.shop.shop_name}}
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Price:
+                                <hr>
+                            </div>
+                            <div class="col-7">
+                                ${{item.price}}
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Description:
+                                <hr>
+                            </div>
+                            <div class="col-12">
+                                {{object.description}}
+                                <hr>
+                            </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <form class="row " method="POST" action="{% url 'shop:item_approved' item.slug%}">
+                                    <div class="col-6">
+                                    {% csrf_token %}
+
+                                    {{ form.is_approved }}
+                                    </div>
+                                    <div class="col-6">
+                                    <button class='btn btn-primary w-50' type="submit">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+      </div>
+  </div>
+</div>
+{% endblock content %}

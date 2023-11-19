@@ -1,0 +1,109 @@
+{% extends "includes/../includes/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class='container my-4'>
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-12 text-center">
+                <div class="card mt-2">
+                    <div class="row text-justify">
+                        <div class="col-5">
+                            {% with last_image=object.itemimage.latest %}
+                                <img class='ml-2 mt-4 img-thumbnail'id='blah' height='125' src="{{ last_image.image.url }}" alt="{{ item.title }}">
+                            {% endwith %}
+                        </div>
+                        <div class="col-7">
+                            <div class="row mb-2 mt-4 text-center">
+                                <div class="col-7">
+                                    <h2 style='margin-bottom: -6px;'>{{object.name}}</h2>
+                                    <small>{{object.title}}</small>
+                                </div>
+                            </div>
+
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Category:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    {{object.category.name}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Shop:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    <a href="{% url 'marketplace:shop' object.shop.slug %}">{{object.shop.shop_name}}</a>
+
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col-5">
+                                    Price:
+                                    <hr>
+                                </div>
+                                <div class="col-7">
+                                    ${{object.price}}
+                                    <hr>
+                                </div>
+                            </div>
+                            <div>
+                            </div>
+                            <div class="row my-2">
+                                <div class="col d-flex justify-content-center align-items-center p-2 gap-4">
+                                    <button class='btn btn-danger btn-block'>Buy now</button>
+                                    <form id='wish-form-{{item.id}}' action="{% url 'marketplace:add_wish' item.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button id='wish-btn-{{item.id}}' type="submit" class="btn btn-info btn-block">
+
+                                            {% if item in request.user.wish_list.filter %}
+                                            <i id='fa-{{item.id}}' class="fa-solid fa-heart"></i>
+                                            {% else %}
+                                            <i id='fa-{{item.id}}' class="fa-regular fa-heart"></i>
+                                            {% endif %}
+
+                                        </button>
+                                    </form>
+
+                                    <form id='add-cart' method="POST" action="{% url 'cart:add-to-cart' object.pk %}">
+                                        {% csrf_token %}
+                                        <button id='add-cart-btn'  {% if in_cart %}disabled='true'{%endif%} type="submit" class="btn btn-warning btn-block">
+                                            {% if in_cart %}
+                                            <i id='fa-icon' class="fa fa-shopping-cart"></i>
+                                            {% else %}
+                                            <i id='fa-icon' class="fa fa-cart-plus"></i>
+                                            {% endif %}
+                                        </button>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="row my-2">
+                            <div class="col-5">
+                                Description:
+                                <hr>
+                            </div>
+                            <div class="col-12">
+                                {{object.description}}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+</div>
+
+
+{% endblock content %}
