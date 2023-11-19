@@ -1,0 +1,62 @@
+{% extends "includes/../includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container my-4'>
+  <div class="container-fluid">
+      <div class="row">
+
+      {% include 'includes/../includes/shop_sidebar.html' %}
+        <div class="col-md-9 text-center card py-2">
+            {% if customers %}
+        <table class="table table-hover my-3">
+          <thead class="thead-dark">
+            <tr>
+              <th class="text-center" scope="col"></th>
+              <th class="text-center" scope="col"><h3>Customers</h3></th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% for customer in customers %}
+            <tr>
+
+              <td class="text-center">{{ forloop.counter }}</td>
+              <td class="text-center"><a href="{% url 'shop:customers_orders' customer.pk %}">{{ customer.username }}</a></td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if is_paginated %}
+        <div class="pagination justify-content-center mt-4">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        {% endif %}
+        {% else %}
+        <h4 class="card-title text-center">You do not have any customers yet.</h4>
+        <div class="col text-center mt-3">
+          <a class="btn btn-info btn-lg" href="{% url 'marketplace:home_view' %}">Go back</a>
+        </div>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

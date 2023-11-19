@@ -1,0 +1,46 @@
+{% extends "includes/../includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+  <div class="container-fluid">
+      <div class="row">
+      {% include 'includes/../includes/customer_sidebar.html' %}
+          <div class="col-md-9 text-center card py-2">
+        <h4 class="card-title text-center">Your Order</h4>
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th class="text-center" scope="col"> </th>
+              <th class="text-center" scope="col">Shop</th>
+              <th class="text-center" scope="col">Item</th>
+              <th class="text-center" scope="col">Quantity</th>
+              <th class="text-center" scope="col">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in orderitems %}
+            <tr>
+              {% with last_image=item.item.itemimage.latest %}
+              <td class="text-center">
+                <img class="img-fluid" style="max-height: 125px; width: auto;" src="{{ last_image.image.url }}" alt="{{ item.title }}">
+              </td>
+              {% endwith %}
+
+              <td class="text-center"><a href="{% url 'marketplace:shop' item.item.shop.slug %}">{{ item.item.shop }}</a></td>
+              <td class="text-center"><a href="{% url 'marketplace:item_details' item.item.slug %}">{{ item.item.name }}</a></td>
+              <td class="text-center">{{ item.quantity }}</td>
+              <td class="text-center">${{ item.item.price }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class='text-end'>
+            Total:  ${{total}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+

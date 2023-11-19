@@ -1,0 +1,89 @@
+{% extends "includes/../../includes/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container mt-4'>
+  <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar -->
+            <div class="list-group">
+            <a href="{% url 'shop:super_user_panel_shops' %}" class="list-group-item list-group-item-action">Shops{% if new_shops %}<span class="badge bg-danger" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+                {{new_shops}}</span>{%endif%}</a>
+            <a href="#" class="list-group-item list-group-item-action">Items{% if new_items %}<span class="badge bg-warning" id='cart_counter' style='border-radius: 50px; position: relative; bottom: 10px; left: 1px;'>
+                {{new_items}}</span>{%endif%}</a>
+            </div>
+        </div>
+            <div class="col-md-9 text-center card py-2">
+                <h4 class="card-title text-center">Shop's Details</h4>
+                <div class="row">
+                    <div class="col-6 text-center mt-3">
+                        <img class='img-thumbnail' style='height: 300px' src="{% if shop.avatar %}{{shop.avatar.url}}{% endif %}" alt="">
+
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6">
+                                Name:
+                            </div>
+
+                            <div class="col-6">
+                                {{shop}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                User:
+                            </div>
+
+                            <div class="col-6">
+                                {{shop.user}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                Created:
+                            </div>
+
+                            <div class="col-6">
+                                {{ shop.created_at|date:"F j, Y, g:i a" }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                Docs:
+                            </div>
+
+                            <div class="col-6">
+                                <a href="{% url 'shop:super_user_detail_shop' shop.slug %}?download-docs">Download</a>
+
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <form class="row " method="POST" action="{% url 'shop:shop_approved' shop.slug %}">
+                                    <div class="col-6">
+                                    {% csrf_token %}
+
+                                    {{ form.is_approved }}
+                                    </div>
+                                    <div class="col-6">
+                                    <button class='btn btn-primary w-50' type="submit">Update</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+      </div>
+  </div>
+</div>
+{% endblock content %}

@@ -2,8 +2,12 @@
 Django==4.1.7
 django-extensions==3.2.1
 django-countries==7.5.1
-# django-debug-toolbar==4.0.0
 django-widget-tweaks==1.4.12
+django-cities-light
+django-ajax-selects
+django-phonenumber-field
+django-phonenumbers
+
 #python
 python-decouple
 pymemcache==4.0.0
@@ -23,10 +27,10 @@ django-celery-beat==2.5.0
 stripe==5.4.0
 
 #other
-django-cities-light
-django-ajax-selects
-django-phonenumber-field
-django-phonenumbers
 matplotlib
 babel
 pre-commit
+black
+isort
+gunicorn==21.2.0
+gevent
