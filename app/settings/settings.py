@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 
+import sentry_sdk
 from celery.schedules import crontab
 from decouple import config
 from django.contrib.messages import constants as messages
@@ -13,14 +14,13 @@ SECRET_KEY = config("SECRET_KEY")
 
 
 ALLOWED_HOSTS = ["nsrevas.bio", "138.68.82.89"]
-# ALLOWED_HOSTS = ["nsrevas.bio", "localhost", "127.0.0.1", "0.0.0.0"]
 
 ADMIN_ENABLED = False
-
-if config("ENV") == "dev":
+ENV = config("ENV")
+if ENV == "dev":
     ADMIN_ENABLED = True
     DEBUG = True
-    ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["nsrevas.bio", "*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -151,8 +151,8 @@ USE_TZ = True
 
 # static files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
 
 
 # media files
@@ -191,35 +191,12 @@ STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 
 STRIPE_ENDPOINT_SECRET = config("STRIPE_ENDPOINT_SECRET")
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
-        },
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-    },
-    "formatters": {
-        "django.server": {
-            "()": "django.utils.log.ServerFormatter",
-            "format": "[%(server_time)s] %(message)s",
-        }
-    },
-    "handlers": {
-        "file": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            "filename": "/path/to/django_error.log",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-    },
-}
+if ENV != "dev":
+    sentry_sdk.init(
+        dsn=config("SENTRY_DSN"),
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
+
+SENDGRID_API_KEY = config("SENDGRID_API_KEY")
+FROM_EMAIL = config("EMAIL_HOST_USER")

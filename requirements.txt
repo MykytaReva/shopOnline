@@ -26,6 +26,12 @@ django-celery-beat==2.5.0
 #payment
 stripe==5.4.0
 
+#logs
+sentry-sdk[django]
+
+#smtp
+sendgrid
+
 #other
 matplotlib
 babel
