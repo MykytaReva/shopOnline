@@ -107,16 +107,6 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
-# email config
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST")
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = config("EMAIL_PORT", cast=int)
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
-
 MESSAGE_TAGS = {
     messages.ERROR: "danger",
     messages.WARNING: "warning",
@@ -151,8 +141,8 @@ USE_TZ = True
 
 # static files
 STATIC_URL = "/static/"
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
 
 
 # media files
@@ -163,25 +153,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom User Model
 AUTH_USER_MODEL = "accounts.User"
-
-# email config
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST")
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = config("EMAIL_PORT", cast=int)
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
-
-CELERY_BROKER_URL = "amqp://localhost"
-CELERY_TIMEZONE = "Europe/Warsaw"
-CELERY_BEAT_SCHEDULE = {
-    "send_daily_newsletter": {
-        "task": "accounts.tasks.send_daily_newsletter",
-        "schedule": crontab(hour=10, minute=0),  # runs every day at 8am
-    },
-}
 
 # location
 GOOGLE_API_KEY = config("GOOGLE_API_KEY")
@@ -199,4 +170,21 @@ if ENV != "dev":
     )
 
 SENDGRID_API_KEY = config("SENDGRID_API_KEY")
-FROM_EMAIL = config("EMAIL_HOST_USER")
+FROM_EMAIL = config("FROM_EMAIL")
+
+
+# Celery Configuration
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+CELERY_BEAT_SCHEDULE = {
+    "send_daily_newsletter": {
+        "task": "accounts.tasks.send_daily_newsletter",
+        "schedule": crontab(hour=10, minute=0),  # runs every day at 8am
+    },
+}
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
