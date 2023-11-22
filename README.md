@@ -55,6 +55,13 @@ Shop experience:
 - As soon as you changed status of the order, user will get email notification about status of order being changed.
 - You can see general stats of your shop and filter it by time period.
 --------
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
 #### Dependency management
 
 All dependencies will be managed via the requirements.txt file not with conda to save space.
