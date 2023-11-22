@@ -21,6 +21,7 @@ psycopg2-binary
 
 #celery
 celery==5.2.7
+celery[redis]
 django-celery-beat==2.5.0
 
 #payment

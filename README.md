@@ -7,7 +7,7 @@ One of the first pet-projects on Django. Classic Marketplace where you can regis
 As a shop you have possibility to create your own shop, add products, manage orders, etc.
 As a customer you can add products to your cart, wishlist, see all products, etc.
 As a site admin you will have access to all shops, products, orders, etc. and you can manage them.
-Services used in project: Stripe, Gmail SMTP, GoogleMapsAPI, Celery, Celery-beat, Docker, Docker-compose, PostgreSQL, etc.
+Services used in project: Stripe, SendGrid, Sentry, GoogleMapsAPI, Redis, Celery, Celery-beat, Docker, Docker-compose, PostgreSQL, etc.
 
 #### Project Architecture
 
