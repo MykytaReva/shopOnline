@@ -62,6 +62,8 @@ Shop experience:
       B-->D;
       C-->D;
 ```
+or as an image:
+![plot](./mermaid1.png)
 #### Dependency management
 
 All dependencies will be managed via the requirements.txt file not with conda to save space.
