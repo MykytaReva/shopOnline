@@ -33,13 +33,14 @@ Services used in project: Stripe, SendGrid, Sentry, GoogleMapsAPI, Redis, Celery
     └── .gitignore                  <- patterns and files to exclude from version control 
 --------
 #### Workflow
-*Shop-Online-FastApi* is a basic Marketplace where you can register as a customer or as a shop.
+*Shop-Online* is a basic Marketplace where you can register as a customer or as a shop.
 In order to register yourself as a shop, you will need to provide additional information such as some required docs and shop's name.
 
 Customer experience:
 - You can add products to your cart.
 - You can see your cart and manage products there.
 - You can add products to your wishlist and also manage it.
+- You can complete payment via Stripe.
 - You can see all products and filter them by shop's/category's name.
 - You can sign up for the newsletter.
 - You can manage your profile settings, set up your avatar, change your password, etc.
