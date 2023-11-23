@@ -1,5 +1,6 @@
-{% extends "includes/../includes/base.html" %}
+{% extends "includes/base.html" %}
 {% load static %}
+
 
 {% block content %}
 
@@ -16,7 +17,9 @@
                     {% with last_image=item.itemimage.latest %}
                         <img class='ml-2 mt-4 card-img-top ' id='blah' style='height: 125px; width: 254px; object-fit: cover;' src="{{ last_image.image.url }}" alt="{{ item.title }}">
                     {% endwith %}
+
                     <div class="card-body">
+
                         <h5 class="card-title">{{item.name}}</h5>
                         <p class="card-text">{{item.title}}</p>
                         <p class="card-text">${{item.price}}</p>

@@ -1,18 +1,22 @@
-{% extends "includes/../includes/base.html" %}
-{% load static %}
+{% extends "includes/base.html" %}
+{% load mermaid %}
 
+{% load static %}
 {% block content %}
 <div class='container mt-4'>
     <div class="container-fluid">
         <div class="row">
-        {% include 'includes/../includes/customer_sidebar.html' %}
+        {% include 'includes/customer_sidebar.html' %}
             <div class="col-md-9 text-center card">
               <div class="text-center p-5" id="empty-cart" style="display: none;">
-                <h3>Cart is empty</h3>
+                <h3>Cart is dempty</h3>
+
               </div>
 
                 <div id='tab' class="container my-5">
-                    <h1 class="mb-4">Your Cart</h1>
+                    <h1 class="mb-4">Your Cлart</h1>
+                    {% mermaid "graph LR; A-->B;" %}
+
 
                     {% if cart_items %}
                       <table class="table table-hover">
