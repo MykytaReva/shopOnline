@@ -1,6 +1,44 @@
 [section start]: <> (project_name)
 ## ShopOnline
+### Workflow
+```mermaid
+---
+title: Registration workflow
+---
+flowchart LR
+    User(User) --> |Register| Shop(Shop)
+    User --> |Register| Customer(Customer)
+    Customer --> |Email verification| Available(Available)
+    Shop --> |Email verification| AvailableUser(Available as User)
+    AvailableUser --> |Admin approval| AvailableShop(Available as Shop)
+    
+```
+```mermaid
+---
+title: Order workflow
+---
+stateDiagram-v2
+    c: CREATED
+    p: PAYMENT
+    a: APPROVED
+    b: DECLINED
 
+    s: NEW ORDER FOR SHOP
+    w: IN PROCESS
+    d: DONE
+
+    [*] --> c : User creates a new order
+    c --> p : User pays for the order
+    
+    p --> a : Payment collected
+    p --> b : Payment declined
+    b --> [*]: Email notification sent to user
+    a --> s : Email confirmation sent\nto user and shop
+    s --> w : Shop starts to process the order
+    w --> d : Shop delivers the order
+    d --> [*]
+
+```
 [section end]: <> (project_name)
 
 One of the first pet-projects on Django. Classic Marketplace where you can register as a customer or as a shop.
